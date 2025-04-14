@@ -1,6 +1,6 @@
 //
 //  Item.swift
-//  StickIt
+//  StickIt-Mac
 //
 //  Created by Alexander Rivera on 4/12/25.
 //

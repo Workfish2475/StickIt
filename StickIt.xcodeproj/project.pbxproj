@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		11D354A52DADCC5700514154 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11D354A42DADCC5700514154 /* WidgetKit.framework */; };
+		11D354A72DADCC5700514154 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11D354A62DADCC5700514154 /* SwiftUI.framework */; };
+		11D354B52DADCC5800514154 /* StickIt-WidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 11D354A22DADCC5700514154 /* StickIt-WidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		1136F49B2DAB337400B18344 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -21,12 +27,53 @@
 			remoteGlobalIDString = 1136F4882DAB337200B18344;
 			remoteInfo = StickIt;
 		};
+		1136F5712DAB3AB400B18344 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1136F4812DAB337200B18344 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1136F5602DAB3AB200B18344;
+			remoteInfo = "StickIt-Mac";
+		};
+		1136F57B2DAB3AB400B18344 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1136F4812DAB337200B18344 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1136F5602DAB3AB200B18344;
+			remoteInfo = "StickIt-Mac";
+		};
+		11D354B32DADCC5800514154 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1136F4812DAB337200B18344 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 11D354A12DADCC5700514154;
+			remoteInfo = "StickIt-WidgetExtension";
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		11D354BA2DADCC5800514154 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				11D354B52DADCC5800514154 /* StickIt-WidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		1136F4892DAB337200B18344 /* StickIt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StickIt.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1136F49A2DAB337400B18344 /* StickItTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StickItTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1136F4A42DAB337400B18344 /* StickItUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StickItUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1136F5612DAB3AB200B18344 /* StickIt-Mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "StickIt-Mac.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1136F5702DAB3AB400B18344 /* StickIt-MacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "StickIt-MacTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1136F57A2DAB3AB400B18344 /* StickIt-MacUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "StickIt-MacUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		11D354A22DADCC5700514154 /* StickIt-WidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "StickIt-WidgetExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		11D354A42DADCC5700514154 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = /System/Library/Frameworks/WidgetKit.framework; sourceTree = "<absolute>"; };
+		11D354A62DADCC5700514154 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = /System/Library/Frameworks/SwiftUI.framework; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -37,6 +84,29 @@
 			);
 			target = 1136F4882DAB337200B18344 /* StickIt */;
 		};
+		1136F58C2DAB3B9300B18344 /* Exceptions for "SwiftData" folder in "StickIt-Mac" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Note.swift,
+			);
+			target = 1136F5602DAB3AB200B18344 /* StickIt-Mac */;
+		};
+		1136F58E2DAB3E8800B18344 /* Exceptions for "StickIt" folder in "StickIt-Mac" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Misc/Colors.swift,
+				Misc/FlowLayout.swift,
+				Models/NoteViewModel.swift,
+			);
+			target = 1136F5602DAB3AB200B18344 /* StickIt-Mac */;
+		};
+		11D354B92DADCC5800514154 /* Exceptions for "StickIt-Widget" folder in "StickIt-WidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 11D354A12DADCC5700514154 /* StickIt-WidgetExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -44,6 +114,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				1136F4AC2DAB337400B18344 /* Exceptions for "StickIt" folder in "StickIt" target */,
+				1136F58E2DAB3E8800B18344 /* Exceptions for "StickIt" folder in "StickIt-Mac" target */,
 			);
 			path = StickIt;
 			sourceTree = "<group>";
@@ -56,6 +127,37 @@
 		1136F4A72DAB337400B18344 /* StickItUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = StickItUITests;
+			sourceTree = "<group>";
+		};
+		1136F4BB2DAB342C00B18344 /* SwiftData */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				1136F58C2DAB3B9300B18344 /* Exceptions for "SwiftData" folder in "StickIt-Mac" target */,
+			);
+			path = SwiftData;
+			sourceTree = "<group>";
+		};
+		1136F5622DAB3AB200B18344 /* StickIt-Mac */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "StickIt-Mac";
+			sourceTree = "<group>";
+		};
+		1136F5732DAB3AB400B18344 /* StickIt-MacTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "StickIt-MacTests";
+			sourceTree = "<group>";
+		};
+		1136F57D2DAB3AB400B18344 /* StickIt-MacUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "StickIt-MacUITests";
+			sourceTree = "<group>";
+		};
+		11D354A82DADCC5700514154 /* StickIt-Widget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				11D354B92DADCC5800514154 /* Exceptions for "StickIt-Widget" folder in "StickIt-WidgetExtension" target */,
+			);
+			path = "StickIt-Widget";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -82,15 +184,51 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1136F55E2DAB3AB200B18344 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1136F56D2DAB3AB400B18344 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1136F5772DAB3AB400B18344 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		11D3549F2DADCC5700514154 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				11D354A72DADCC5700514154 /* SwiftUI.framework in Frameworks */,
+				11D354A52DADCC5700514154 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		1136F4802DAB337200B18344 = {
 			isa = PBXGroup;
 			children = (
+				1136F4BB2DAB342C00B18344 /* SwiftData */,
 				1136F48B2DAB337200B18344 /* StickIt */,
 				1136F49D2DAB337400B18344 /* StickItTests */,
 				1136F4A72DAB337400B18344 /* StickItUITests */,
+				1136F5622DAB3AB200B18344 /* StickIt-Mac */,
+				1136F5732DAB3AB400B18344 /* StickIt-MacTests */,
+				1136F57D2DAB3AB400B18344 /* StickIt-MacUITests */,
+				11D354A82DADCC5700514154 /* StickIt-Widget */,
+				11D354A32DADCC5700514154 /* Frameworks */,
 				1136F48A2DAB337200B18344 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -101,8 +239,21 @@
 				1136F4892DAB337200B18344 /* StickIt.app */,
 				1136F49A2DAB337400B18344 /* StickItTests.xctest */,
 				1136F4A42DAB337400B18344 /* StickItUITests.xctest */,
+				1136F5612DAB3AB200B18344 /* StickIt-Mac.app */,
+				1136F5702DAB3AB400B18344 /* StickIt-MacTests.xctest */,
+				1136F57A2DAB3AB400B18344 /* StickIt-MacUITests.xctest */,
+				11D354A22DADCC5700514154 /* StickIt-WidgetExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		11D354A32DADCC5700514154 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				11D354A42DADCC5700514154 /* WidgetKit.framework */,
+				11D354A62DADCC5700514154 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -115,13 +266,16 @@
 				1136F4852DAB337200B18344 /* Sources */,
 				1136F4862DAB337200B18344 /* Frameworks */,
 				1136F4872DAB337200B18344 /* Resources */,
+				11D354BA2DADCC5800514154 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				11D354B42DADCC5800514154 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				1136F48B2DAB337200B18344 /* StickIt */,
+				1136F4BB2DAB342C00B18344 /* SwiftData */,
 			);
 			name = StickIt;
 			packageProductDependencies = (
@@ -176,6 +330,96 @@
 			productReference = 1136F4A42DAB337400B18344 /* StickItUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		1136F5602DAB3AB200B18344 /* StickIt-Mac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1136F5822DAB3AB400B18344 /* Build configuration list for PBXNativeTarget "StickIt-Mac" */;
+			buildPhases = (
+				1136F55D2DAB3AB200B18344 /* Sources */,
+				1136F55E2DAB3AB200B18344 /* Frameworks */,
+				1136F55F2DAB3AB200B18344 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				1136F5622DAB3AB200B18344 /* StickIt-Mac */,
+			);
+			name = "StickIt-Mac";
+			packageProductDependencies = (
+			);
+			productName = "StickIt-Mac";
+			productReference = 1136F5612DAB3AB200B18344 /* StickIt-Mac.app */;
+			productType = "com.apple.product-type.application";
+		};
+		1136F56F2DAB3AB400B18344 /* StickIt-MacTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1136F5852DAB3AB400B18344 /* Build configuration list for PBXNativeTarget "StickIt-MacTests" */;
+			buildPhases = (
+				1136F56C2DAB3AB400B18344 /* Sources */,
+				1136F56D2DAB3AB400B18344 /* Frameworks */,
+				1136F56E2DAB3AB400B18344 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1136F5722DAB3AB400B18344 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				1136F5732DAB3AB400B18344 /* StickIt-MacTests */,
+			);
+			name = "StickIt-MacTests";
+			packageProductDependencies = (
+			);
+			productName = "StickIt-MacTests";
+			productReference = 1136F5702DAB3AB400B18344 /* StickIt-MacTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		1136F5792DAB3AB400B18344 /* StickIt-MacUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1136F5882DAB3AB400B18344 /* Build configuration list for PBXNativeTarget "StickIt-MacUITests" */;
+			buildPhases = (
+				1136F5762DAB3AB400B18344 /* Sources */,
+				1136F5772DAB3AB400B18344 /* Frameworks */,
+				1136F5782DAB3AB400B18344 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1136F57C2DAB3AB400B18344 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				1136F57D2DAB3AB400B18344 /* StickIt-MacUITests */,
+			);
+			name = "StickIt-MacUITests";
+			packageProductDependencies = (
+			);
+			productName = "StickIt-MacUITests";
+			productReference = 1136F57A2DAB3AB400B18344 /* StickIt-MacUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		11D354A12DADCC5700514154 /* StickIt-WidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 11D354B62DADCC5800514154 /* Build configuration list for PBXNativeTarget "StickIt-WidgetExtension" */;
+			buildPhases = (
+				11D3549E2DADCC5700514154 /* Sources */,
+				11D3549F2DADCC5700514154 /* Frameworks */,
+				11D354A02DADCC5700514154 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				11D354A82DADCC5700514154 /* StickIt-Widget */,
+			);
+			name = "StickIt-WidgetExtension";
+			packageProductDependencies = (
+			);
+			productName = "StickIt-WidgetExtension";
+			productReference = 11D354A22DADCC5700514154 /* StickIt-WidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -197,6 +441,20 @@
 						CreatedOnToolsVersion = 16.3;
 						TestTargetID = 1136F4882DAB337200B18344;
 					};
+					1136F5602DAB3AB200B18344 = {
+						CreatedOnToolsVersion = 16.3;
+					};
+					1136F56F2DAB3AB400B18344 = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = 1136F5602DAB3AB200B18344;
+					};
+					1136F5792DAB3AB400B18344 = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = 1136F5602DAB3AB200B18344;
+					};
+					11D354A12DADCC5700514154 = {
+						CreatedOnToolsVersion = 16.3;
+					};
 				};
 			};
 			buildConfigurationList = 1136F4842DAB337200B18344 /* Build configuration list for PBXProject "StickIt" */;
@@ -216,6 +474,10 @@
 				1136F4882DAB337200B18344 /* StickIt */,
 				1136F4992DAB337400B18344 /* StickItTests */,
 				1136F4A32DAB337400B18344 /* StickItUITests */,
+				1136F5602DAB3AB200B18344 /* StickIt-Mac */,
+				1136F56F2DAB3AB400B18344 /* StickIt-MacTests */,
+				1136F5792DAB3AB400B18344 /* StickIt-MacUITests */,
+				11D354A12DADCC5700514154 /* StickIt-WidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -236,6 +498,34 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		1136F4A22DAB337400B18344 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1136F55F2DAB3AB200B18344 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1136F56E2DAB3AB400B18344 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1136F5782DAB3AB400B18344 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		11D354A02DADCC5700514154 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -266,6 +556,34 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1136F55D2DAB3AB200B18344 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1136F56C2DAB3AB400B18344 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1136F5762DAB3AB400B18344 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		11D3549E2DADCC5700514154 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -278,6 +596,21 @@
 			isa = PBXTargetDependency;
 			target = 1136F4882DAB337200B18344 /* StickIt */;
 			targetProxy = 1136F4A52DAB337400B18344 /* PBXContainerItemProxy */;
+		};
+		1136F5722DAB3AB400B18344 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1136F5602DAB3AB200B18344 /* StickIt-Mac */;
+			targetProxy = 1136F5712DAB3AB400B18344 /* PBXContainerItemProxy */;
+		};
+		1136F57C2DAB3AB400B18344 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1136F5602DAB3AB200B18344 /* StickIt-Mac */;
+			targetProxy = 1136F57B2DAB3AB400B18344 /* PBXContainerItemProxy */;
+		};
+		11D354B42DADCC5800514154 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 11D354A12DADCC5700514154 /* StickIt-WidgetExtension */;
+			targetProxy = 11D354B32DADCC5800514154 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -568,6 +901,216 @@
 			};
 			name = Release;
 		};
+		1136F5832DAB3AB400B18344 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "StickIt-Mac/StickIt_Mac.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 79M6SRJ28R;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "alexanderrivera.StickIt-Mac";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		1136F5842DAB3AB400B18344 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "StickIt-Mac/StickIt_Mac.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 79M6SRJ28R;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "alexanderrivera.StickIt-Mac";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		1136F5862DAB3AB400B18344 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 79M6SRJ28R;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "alexanderrivera.StickIt-MacTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StickIt-Mac.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/StickIt-Mac";
+			};
+			name = Debug;
+		};
+		1136F5872DAB3AB400B18344 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 79M6SRJ28R;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "alexanderrivera.StickIt-MacTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StickIt-Mac.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/StickIt-Mac";
+			};
+			name = Release;
+		};
+		1136F5892DAB3AB400B18344 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 79M6SRJ28R;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "alexanderrivera.StickIt-MacUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = "StickIt-Mac";
+			};
+			name = Debug;
+		};
+		1136F58A2DAB3AB400B18344 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 79M6SRJ28R;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "alexanderrivera.StickIt-MacUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = "StickIt-Mac";
+			};
+			name = Release;
+		};
+		11D354B72DADCC5800514154 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = "StickIt-Widget/StickIt_Widget.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 79M6SRJ28R;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "StickIt-Widget/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "StickIt-Widget";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "alexanderrivera.StickIt.StickIt-Widget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 2.4;
+			};
+			name = Debug;
+		};
+		11D354B82DADCC5800514154 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = "StickIt-Widget/StickIt_Widget.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 79M6SRJ28R;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "StickIt-Widget/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "StickIt-Widget";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "alexanderrivera.StickIt.StickIt-Widget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 2.4;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -603,6 +1146,42 @@
 			buildConfigurations = (
 				1136F4B62DAB337400B18344 /* Debug */,
 				1136F4B72DAB337400B18344 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1136F5822DAB3AB400B18344 /* Build configuration list for PBXNativeTarget "StickIt-Mac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1136F5832DAB3AB400B18344 /* Debug */,
+				1136F5842DAB3AB400B18344 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1136F5852DAB3AB400B18344 /* Build configuration list for PBXNativeTarget "StickIt-MacTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1136F5862DAB3AB400B18344 /* Debug */,
+				1136F5872DAB3AB400B18344 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1136F5882DAB3AB400B18344 /* Build configuration list for PBXNativeTarget "StickIt-MacUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1136F5892DAB3AB400B18344 /* Debug */,
+				1136F58A2DAB3AB400B18344 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		11D354B62DADCC5800514154 /* Build configuration list for PBXNativeTarget "StickIt-WidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				11D354B72DADCC5800514154 /* Debug */,
+				11D354B82DADCC5800514154 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
