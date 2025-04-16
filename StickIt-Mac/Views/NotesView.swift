@@ -17,7 +17,7 @@ struct NotesView: View {
     @State private var viewModel: NoteViewModel = NoteViewModel()
     
     var body: some View {
-        VStack (spacing: 5) {
+        VStack (spacing: 0) {
             HStack {
                 TextField ("New Note", text: $viewModel.titleField)
                     .font(.largeTitle.bold())
@@ -32,8 +32,8 @@ struct NotesView: View {
             
             .padding([.top, .horizontal])
             
-            Text("Last modified: \(getTimeString())")
-                .font(.caption)
+            Text("Last modified: \(viewModel.getDate()) at \(viewModel.getTime())")
+                .font(.footnote.bold())
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal)
@@ -62,7 +62,7 @@ struct NotesView: View {
             ToolbarItem {
                 Button {
                     viewModel.updatePinned()
-                    openWindow(value: viewModel.noteItem!.id)
+                    openWindow(value: viewModel.noteItem!)
                 } label: {
                     Label("Pin", systemImage: "pin.fill")
                         .foregroundStyle(viewModel.isPinned ? .red : .gray)

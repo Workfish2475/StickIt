@@ -107,6 +107,20 @@
 			);
 			target = 11D354A12DADCC5700514154 /* StickIt-WidgetExtension */;
 		};
+		11D354BC2DAECC3300514154 /* Exceptions for "SwiftData" folder in "StickIt-WidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Note.swift,
+			);
+			target = 11D354A12DADCC5700514154 /* StickIt-WidgetExtension */;
+		};
+		11D354BE2DAF10FC00514154 /* Exceptions for "StickIt" folder in "StickIt-WidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Misc/Colors.swift,
+			);
+			target = 11D354A12DADCC5700514154 /* StickIt-WidgetExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -115,6 +129,7 @@
 			exceptions = (
 				1136F4AC2DAB337400B18344 /* Exceptions for "StickIt" folder in "StickIt" target */,
 				1136F58E2DAB3E8800B18344 /* Exceptions for "StickIt" folder in "StickIt-Mac" target */,
+				11D354BE2DAF10FC00514154 /* Exceptions for "StickIt" folder in "StickIt-WidgetExtension" target */,
 			);
 			path = StickIt;
 			sourceTree = "<group>";
@@ -133,6 +148,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				1136F58C2DAB3B9300B18344 /* Exceptions for "SwiftData" folder in "StickIt-Mac" target */,
+				11D354BC2DAECC3300514154 /* Exceptions for "SwiftData" folder in "StickIt-WidgetExtension" target */,
 			);
 			path = SwiftData;
 			sourceTree = "<group>";
@@ -647,7 +663,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
@@ -687,7 +704,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
@@ -1062,6 +1080,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "alexanderrivera.StickIt.StickIt-Widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
@@ -1101,6 +1120,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "alexanderrivera.StickIt.StickIt-Widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";

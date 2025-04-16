@@ -8,11 +8,10 @@
 import SwiftUI
 import SwiftData
 
+//TODO: Needs to also write to the note on change
 struct StickyView: View {
     
-    var noteID: UUID
-    
-    @State var noteItem: Note? = nil
+    var noteItem: Note
     
     @State private var viewModel: NoteViewModel = NoteViewModel()
     
@@ -21,16 +20,22 @@ struct StickyView: View {
     
     var body: some View {
         VStack (alignment: .leading) {
-            Text("\(noteItem != nil ? noteItem!.name : "Untitled Note")")
+            Text("\(viewModel.titleField)")
                 .font(.title.bold())
-                .padding(.top, 0)
-            Text("Last modified \(viewModel.getTime())")
-                .font(.subheadline)
+                
+                .tint(.white)
+                .foregroundStyle(.white)
+            
+            Text("Last modified \(viewModel.getDate()) at \(viewModel.getTime())")
+                .font(.footnote)
+                .fontWeight(.medium)
+                .foregroundStyle(.secondary)
             
             TextEditor(text: $viewModel.contentField)
                 .padding()
                 .font(.body)
                 .tint(.white)
+                .foregroundStyle(.white)
                 .textEditorStyle(.plain)
                 .background(
                     RoundedRectangle(cornerRadius: 10)
@@ -40,52 +45,34 @@ struct StickyView: View {
             Spacer()
         }
         
-        .padding()
+        .padding([.bottom, .horizontal])
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
             Color(name: viewModel.noteColor).opacity(0.6)
         )
         
         .task {
-            getNote()
-            
-            if let noteItem = noteItem {
-                viewModel.setNote(noteItem)
-            }
+            viewModel.setNote(noteItem)
         }
         
         .onAppear {
             DispatchQueue.main.async {
-                if let window = NSApplication.shared.windows.first(where: { $0.title == "Note View" }) {
+                if let window = NSApplication.shared.windows.first(where: { $0.title == noteItem.name }) {
                     window.isOpaque = false
                     window.backgroundColor = .clear
-                    window.hasShadow = true
+                    window.titleVisibility = .hidden
                     window.standardWindowButton(.closeButton)?.isHidden = false
                     window.standardWindowButton(.miniaturizeButton)?.isHidden = true
                     window.standardWindowButton(.zoomButton)?.isHidden = true
                     window.isMovableByWindowBackground = true
-                    window.level = .floating
+                    window.level = .normal
                 }
             }
-        }
-    }
-    
-    func getNote() -> Void {
-        var descriptor = FetchDescriptor<Note>()
-        
-        descriptor.predicate = #Predicate {
-            $0.id == noteID
-        }
-        
-        do {
-            noteItem =  try context.fetch(descriptor).first
-        } catch {
-            fatalError("Failed to fetch note: \(error)")
         }
     }
 }
 
 #Preview ("StickyView") {
-    StickyView(noteID: .init())
+    StickyView(noteItem: .placeholder)
         .frame(minWidth: 250, idealWidth: 300, minHeight: 200, idealHeight: 300)
 }

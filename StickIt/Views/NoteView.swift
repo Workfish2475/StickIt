@@ -36,8 +36,8 @@ struct NoteView: View {
                 
                 .padding([.top, .horizontal])
                 
-                Text("Last modified \(getTimeString())")
-                    .font(.caption)
+                Text("Last modified \(viewModel.getDate()) at \(viewModel.getTime())")
+                    .font(.footnote.bold())
                     .foregroundStyle(Color(uiColor: .secondaryLabel))
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal)
@@ -129,16 +129,6 @@ struct NoteView: View {
             .onSubmit {
                 viewModel.updateContent()
             }
-    }
-    
-    func getTimeString() -> String {
-        let lastModified = viewModel.lastModified
-        
-        if (Calendar.current.isDateInToday(lastModified)) {
-            return "\(viewModel.lastModified.formatted(.dateTime.hour().minute()))"
-        } else {
-            return "\(viewModel.lastModified.formatted(.dateTime.day().month().year()))"
-        }
     }
 }
 

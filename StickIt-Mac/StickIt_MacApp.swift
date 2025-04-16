@@ -17,12 +17,16 @@ struct StickIt_MacApp: App {
                 .frame(minWidth: 400, idealWidth: 600, minHeight: 450, idealHeight: 800)
         }
         
-        WindowGroup("Note View", for: Note.ID.self) { $noteId in
-            if let noteId {
-                StickyView(noteID: noteId)
+        WindowGroup("Note View", for: Note.self) { $note in
+            if let unwrappedNote = note {
+                StickyView(noteItem: unwrappedNote)
                     .modelContainer(for: [Note.self])
+                    .frame(minWidth: 250, minHeight: 200)
+                    .navigationTitle(unwrappedNote.name)
             }
         }
+        
+        
         
         .defaultSize(CGSize(width: 240, height: 250))
         .windowStyle(.hiddenTitleBar)

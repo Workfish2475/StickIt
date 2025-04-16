@@ -113,4 +113,18 @@ class NoteViewModel {
     func getTime() -> String {
         return "\(self.lastModified.formatted(.dateTime.hour().minute()))"
     }
+    
+    func getDate() -> String {
+        let isToday = Calendar.current.isDateInToday(lastModified)
+        
+        if (isToday) {
+            return "Today"
+        } else {
+            return "\(self.lastModified.formatted(.dateTime.month().day()))"
+        }
+    }
+    
+    func getNoteItemFromID(_ id: UUID, context: ModelContext) {
+        
+    }
 }

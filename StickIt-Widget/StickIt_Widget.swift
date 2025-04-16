@@ -7,8 +7,22 @@
 
 import WidgetKit
 import SwiftUI
+import SwiftData
 
 struct Provider: AppIntentTimelineProvider {
+    var container: ModelContext {
+        let context: ModelContext
+        
+        do {
+            let container = try ModelContainer(for: Note.self, configurations: .init(isStoredInMemoryOnly: false))
+            context = ModelContext(container)
+        } catch {
+            fatalError("Error creating ModelContainer: \(error)")
+        }
+        
+        return context
+    }
+    
     func placeholder(in context: Context) -> SimpleEntry {
         SimpleEntry(date: Date(), configuration: ConfigurationAppIntent())
     }
@@ -19,21 +33,12 @@ struct Provider: AppIntentTimelineProvider {
     
     func timeline(for configuration: ConfigurationAppIntent, in context: Context) async -> Timeline<SimpleEntry> {
         var entries: [SimpleEntry] = []
-
-        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
-        let currentDate = Date()
-        for hourOffset in 0 ..< 5 {
-            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate, configuration: configuration)
-            entries.append(entry)
-        }
+        
+        let entry = SimpleEntry(date: .now, configuration: configuration)
+        entries.append(entry)
 
         return Timeline(entries: entries, policy: .atEnd)
     }
-
-//    func relevances() async -> WidgetRelevances<ConfigurationAppIntent> {
-//        // Generate a list containing the contexts this widget is relevant in.
-//    }
 }
 
 struct SimpleEntry: TimelineEntry {
@@ -45,11 +50,23 @@ struct StickIt_WidgetEntryView : View {
     var entry: Provider.Entry
 
     var body: some View {
-        Text("Time:")
-        Text(entry.date, style: .time)
-
-        Text("Favorite Emoji:")
-        Text(entry.configuration.favoriteEmoji)
+        VStack (alignment: .leading) {
+            Text("Sample Text")
+                .font(.headline)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            Text("Last modified \(entry.date.formatted(.dateTime.hour().minute()))")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text(.init("Some note text goes here. Could be something like a list: \n* Item 1\n* Item 2\n* Item 3"))
+                .multilineTextAlignment(.leading)
+                .font(.system(size: 16, weight: .regular, design: .default))
+                .padding(.top, 2)
+            
+            Spacer()
+        }
+        
+        .foregroundStyle(.white)
+        .containerBackground(.red.gradient, for: .widget)
     }
 }
 
@@ -57,30 +74,31 @@ struct StickIt_Widget: Widget {
     let kind: String = "StickIt_Widget"
 
     var body: some WidgetConfiguration {
-        AppIntentConfiguration(kind: kind, intent: ConfigurationAppIntent.self, provider: Provider()) { entry in
+        AppIntentConfiguration(
+            kind: kind,
+            intent: ConfigurationAppIntent.self,
+            provider: Provider()
+        ) { entry in
             StickIt_WidgetEntryView(entry: entry)
-                .containerBackground(.fill.tertiary, for: .widget)
+                .modelContainer(for: [Note.self])
         }
+        
+        .description("Sticky notes for your home screen")
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge, .systemExtraLarge])
     }
 }
 
 extension ConfigurationAppIntent {
-    fileprivate static var smiley: ConfigurationAppIntent {
+    fileprivate static var demo: ConfigurationAppIntent {
         let intent = ConfigurationAppIntent()
-        intent.favoriteEmoji = "😀"
-        return intent
-    }
-    
-    fileprivate static var starEyes: ConfigurationAppIntent {
-        let intent = ConfigurationAppIntent()
-        intent.favoriteEmoji = "🤩"
+        intent.noteId = "noteID"
         return intent
     }
 }
 
-#Preview(as: .systemSmall) {
+#Preview(as: .systemLarge) {
     StickIt_Widget()
 } timeline: {
-    SimpleEntry(date: .now, configuration: .smiley)
-    SimpleEntry(date: .now, configuration: .starEyes)
+    SimpleEntry(date: .now, configuration: .demo)
 }
+
