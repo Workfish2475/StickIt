@@ -26,22 +26,24 @@ struct NoteView: View {
                         .onSubmit {
                             viewModel.updateTitle()
                         }
-                    Image(systemName: "pin.fill")
-                        .foregroundStyle(viewModel.isPinned ? .red : .gray)
-                        .disabled(viewModel.noteItem == nil)
-                        .onTapGesture {
-                            viewModel.updatePinned()
-                        }
+                    
+                    Button {
+                        viewModel.updatePinned()
+                    } label: {
+                        Image(systemName: "pin.fill")
+                    }
+                    
+                    .foregroundStyle(viewModel.isPinned ? .red : .gray)
+                    .disabled(viewModel.noteItem == nil)
                 }
                 
-                .padding([.top, .horizontal])
-                
                 Text("Last modified \(viewModel.getDate()) at \(viewModel.getTime())")
-                    .font(.footnote.bold())
-                    .foregroundStyle(Color(uiColor: .secondaryLabel))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal)
             }
+            
+            .padding([.top, .horizontal])
 
             textEditingView()
             controlPanel()
@@ -80,7 +82,6 @@ struct NoteView: View {
             }
         }
         
-        //TODO: Works for now, but we should move away from it to something more elegant.
         .onDisappear() {
             viewModel.saveNote(context)
         }
@@ -106,6 +107,7 @@ struct NoteView: View {
                 Label("Done", systemImage: "checkmark.circle.fill")
             }
             .tint(.green)
+            .disabled(viewModel.titleField.isEmpty && viewModel.contentField.isEmpty)
         }
         
         .padding(.horizontal)
@@ -117,10 +119,10 @@ struct NoteView: View {
         TextEditor(text: $viewModel.contentField)
             .padding()
             .textEditorStyle(.plain)
-            .font(.headline)
+            .font(.body)
             .foregroundStyle(.white)
             .frame(minHeight: 550)
-            .submitLabel(.done)
+            .submitLabel(.return)
             .background(
                 RoundedRectangle(cornerRadius: 10)
                     .fill(Color(Color(name: viewModel.noteColor).opacity(0.8)))
@@ -133,5 +135,5 @@ struct NoteView: View {
 }
 
 #Preview {
-    NoteView()
+    NoteView(noteItem: .placeholder)
 }

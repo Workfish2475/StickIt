@@ -20,14 +20,11 @@ struct NotesView: View {
         VStack (spacing: 0) {
             HStack {
                 TextField ("New Note", text: $viewModel.titleField)
-                    .font(.largeTitle.bold())
-                    .foregroundStyle(.white)
+                    .font(.title.bold())
                     .textFieldStyle(.plain)
                     .onSubmit {
                         viewModel.updateTitle()
                     }
-                
-                
             }
             
             .padding([.top, .horizontal])
@@ -40,10 +37,10 @@ struct NotesView: View {
             
             TextEditor(text: $viewModel.contentField)
                 .padding()
+                .font(.body)
                 .textEditorStyle(.plain)
-                .font(.headline)
-                .foregroundStyle(.white)
-                .submitLabel(.done)
+                .submitLabel(.done) 
+                .multilineTextAlignment(.leading)
                 .background(
                     RoundedRectangle(cornerRadius: 10)
                         .fill(Color(Color(name: viewModel.noteColor).opacity(0.8)))
@@ -126,6 +123,6 @@ struct NotesView: View {
 }
 
 #Preview {
-    NotesView()
+    NotesView(noteItem: .placeholder)
         .frame(minWidth: 400, idealWidth: 800, minHeight: 400, idealHeight: 800)
 }

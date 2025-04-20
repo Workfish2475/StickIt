@@ -13,6 +13,8 @@ struct ContentView: View {
     @Query private var notes: [Note]
     @Namespace private var namespace
     
+    @Environment(\.openWindow) private var openWindow
+    
     @State private var selectedNote: Note?
     @State private var addingNote = false
     

@@ -60,10 +60,10 @@ class Note: Codable {
     
     static let placeholder: Note = Note(
         name: "Shopping List",
-        content: "- eggs \n - milk \n - bread",
+        content: "- Eggs \n- Milk \n- Bread",
         color: "#FFFFFF",
         isPinned: false,
-        lastModified: Date.now
+        lastModified: Date.distantPast
     )
 }
 

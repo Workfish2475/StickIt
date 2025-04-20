@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import WidgetKit
 
 @Observable
 class NoteViewModel {
@@ -59,10 +60,14 @@ class NoteViewModel {
         } catch {
             print("error saving: \(error)")
         }
+        
+        WidgetCenter.shared.reloadAllTimelines()
     }
     
     func deleteNote(_ context: ModelContext) -> Void {
         context.delete(noteItem!)
+        
+        WidgetCenter.shared.reloadAllTimelines()
     }
     
     func updateTitle() -> Void {
@@ -88,6 +93,8 @@ class NoteViewModel {
         if let existingNote = noteItem {
             existingNote.lastModified = self.lastModified
         }
+        
+        WidgetCenter.shared.reloadAllTimelines()
     }
     
     func updatePinned() -> Void {
@@ -122,9 +129,5 @@ class NoteViewModel {
         } else {
             return "\(self.lastModified.formatted(.dateTime.month().day()))"
         }
-    }
-    
-    func getNoteItemFromID(_ id: UUID, context: ModelContext) {
-        
     }
 }
