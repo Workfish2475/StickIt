@@ -10,7 +10,7 @@ import SwiftUI
 struct ProView: View {
     var body: some View {
         Text("Something")
-            .navigationTitle("Pro")
+            .navigationTitle("Tip")
     }
 }
 

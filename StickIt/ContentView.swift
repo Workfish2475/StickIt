@@ -10,128 +10,17 @@ import SwiftData
 
 struct ContentView: View {
     
-    @Query private var notes: [Note]
-    
     @State private var showingEntry: Bool = false
     @State private var showingSettings: Bool = false
-    
-    @State private var selectedNote: Note? = nil
-    
-    @Environment(\.colorScheme) private var scheme
-    
-    @Namespace private var namespace
-    
-    var pinnedNotes: [Note] {
-        return notes.filter { $0.isPinned }
-    }
-    
-    var regularNotes: [Note] {
-        return notes.filter { !$0.isPinned }
-    }
     
     // MARK: - gets current device type (phone or pad)
     var currentDevice: UIUserInterfaceIdiom {
         return UIDevice.current.userInterfaceIdiom
     }
     
-    var adaptiveColumns: [GridItem] {
-        if currentDevice == .pad {
-            return Array(repeating: GridItem(.flexible()), count: 4)
-        } else {
-            return Array(repeating: GridItem(.flexible()), count: 2)
-        }
-    }
-    
-    var itemSize: CGSize {
-        if currentDevice == .pad {
-            return CGSize(width: 275, height: 225)
-        } else {
-            return CGSize(width: 175, height: 175)
-        }
-    }
-    
-    var spacing: CGFloat {
-        if currentDevice == .pad {
-            return 20
-        } else {
-            return 10
-        }
-    }
-    
     var body: some View {
     NavigationStack {
-        ZStack (alignment: .bottomTrailing) {
-            ScrollView {
-                if (!pinnedNotes.isEmpty) {
-                    LazyVGrid (columns: adaptiveColumns, spacing: spacing) {
-                        Section {
-                            ForEach(pinnedNotes, id: \.persistentModelID) { note in
-                                NavigationLink(value: note) {
-                                    noteItem(note)
-                                        .matchedTransitionSource(id: note.persistentModelID, in: namespace)
-                                        .frame(width: itemSize.width, height: itemSize.height)
-                                }
-                            }
-                        } header: {
-                            HStack {
-                                Text("Pinned")
-                                    .font(.caption.bold())
-                                    .foregroundStyle(.secondary)
-                                
-                                Spacer()
-                            }
-                        }
-                    }
-                    
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                }
-                
-                if (!regularNotes.isEmpty) {
-                    LazyVGrid (columns: adaptiveColumns, spacing: spacing) {
-                        Section {
-                            ForEach(regularNotes, id: \.persistentModelID) { note in
-                                NavigationLink(value: note) {
-                                    noteItem(note)
-                                        .matchedTransitionSource(id: note.persistentModelID, in: namespace)
-                                        .frame(width: itemSize.width, height: itemSize.height)
-                                }
-                            }
-                        } header: {
-                            HStack {
-                                Text("General")
-                                    .font(.caption.bold())
-                                    .foregroundStyle(.secondary)
-                                
-                                Spacer()
-                            }
-                        }
-                    }
-                    
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                }
-            }
-            
-            .frame(maxWidth: .infinity)
-            
-            buttonView()
-                .matchedTransitionSource(id: "newNote", in: namespace)
-            }
-        
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .navigationDestination(for: Note.self) { note in
-                NoteView(noteItem: note)
-                    .navigationTransition(.zoom(sourceID: note.persistentModelID, in: namespace))
-            }
-        
-            .navigationDestination(for: String.self) { id in
-                if id == "newNote" {
-                    NoteView()
-                        .navigationTransition(.zoom(sourceID: "newNote", in: namespace))
-                }
-            }
-            
+        deviceView()
             .scrollIndicators(.hidden)
             .navigationTitle("StickIt")
             .toolbar {
@@ -150,52 +39,12 @@ struct ContentView: View {
         }
     }
     
-    func noteItem(_ noteItem: Note) -> some View {
-        VStack(alignment: .leading) {
-            Text("\(noteItem.name)")
-                .font(.title3.bold())
-            Text("\(getTimeString(noteItem))")
-                .font(.caption.bold())
-                .foregroundStyle(.secondary)
-            
-            ZStack (alignment: .topLeading) {
-                RoundedRectangle(cornerRadius: 10)
-                    .foregroundStyle(Color(name: noteItem.color))
-                Text("\(noteItem.content)")
-                    .font(.caption.bold())
-                    .lineLimit(3)
-                    .multilineTextAlignment(.leading)
-                    .padding()
-            }
-        }
-        
-        .padding()
-        .foregroundStyle(.white)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color(name: noteItem.color).opacity(0.8).gradient)
-        )
-    }
-    
-    func buttonView() -> some View {
-        NavigationLink(value: "newNote") {
-            Image(systemName: "plus.circle.fill")
-                .resizable()
-                .zIndex(1)
-                .frame(width: 45, height: 45)
-                .padding()
-                .frame(alignment: .bottomTrailing)
-        }
-    }
-    
-    func getTimeString(_ noteItem: Note) -> String {
-        let lastModified = noteItem.lastModified
-        
-        if Calendar.current.isDateInToday(lastModified) {
-            return "\(lastModified.formatted(.dateTime.hour().minute()))"
+    @ViewBuilder
+    func deviceView() -> some View {
+        if currentDevice == .phone {
+            iPhoneView()
         } else {
-            return "\(lastModified.formatted(.dateTime.month().day().year()))"
+            iPadView()
         }
     }
 }
