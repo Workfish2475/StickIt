@@ -26,8 +26,13 @@ struct iPadView: View {
     var body: some View {
         ZStack (alignment: .bottomTrailing) {
             ScrollView {
-                noteSection("Pinned", pinnedNotes)
-                noteSection("General", generalNotes)
+                if (!pinnedNotes.isEmpty) {
+                    noteSection("Pinned", pinnedNotes)
+                }
+                
+                if (!generalNotes.isEmpty) {
+                    noteSection("General", generalNotes)
+                }
             }
             
             buttonView()

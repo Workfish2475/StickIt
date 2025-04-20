@@ -13,6 +13,10 @@ struct ContentView: View {
     @State private var showingEntry: Bool = false
     @State private var showingSettings: Bool = false
     
+    @State private var selectedNote: Note?
+    
+    @Environment(\.modelContext) private var context
+    
     // MARK: - gets current device type (phone or pad)
     var currentDevice: UIUserInterfaceIdiom {
         return UIDevice.current.userInterfaceIdiom
@@ -21,7 +25,6 @@ struct ContentView: View {
     var body: some View {
     NavigationStack {
         deviceView()
-            .scrollIndicators(.hidden)
             .navigationTitle("StickIt")
             .toolbar {
                 ToolbarItem (placement: .topBarTrailing) {
@@ -32,10 +35,25 @@ struct ContentView: View {
                     }
                 }
             }
+        
+            .navigationDestination(item: $selectedNote) {note in
+                NoteView(noteItem: note)
+            }
         }
         
         .sheet(isPresented: $showingSettings) {
             SettingsView()
+        }
+        
+        .onOpenURL { url in
+            guard let id = UUID(uuidString: url.lastPathComponent) else {
+                print("Invalid UUID")
+                return
+            }
+
+            if let note = fetchNote(id) {
+                selectedNote = note
+            }
         }
     }
     
@@ -45,6 +63,21 @@ struct ContentView: View {
             iPhoneView()
         } else {
             iPadView()
+        }
+    }
+    
+    private func fetchNote(_ id: UUID) -> Note? {
+        
+        var desc = FetchDescriptor<Note>()
+        desc.predicate = #Predicate<Note> {
+            $0.id == id
+        }
+        
+        do {
+            return try context.fetch(desc).first
+        } catch {
+            print("Error fetching note: \(error)")
+            return nil
         }
     }
 }

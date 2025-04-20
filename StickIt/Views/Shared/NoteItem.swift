@@ -23,8 +23,7 @@ struct NoteItem: View {
                 RoundedRectangle(cornerRadius: 10)
                     .foregroundStyle(Color(name: noteItem.color))
                 Text("\(noteItem.content)")
-                    .font(.caption.bold())
-                    .lineLimit(3)
+                    .font(.caption)
                     .multilineTextAlignment(.leading)
                     .padding()
             }

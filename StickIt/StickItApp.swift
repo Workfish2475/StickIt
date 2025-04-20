@@ -9,11 +9,11 @@ import SwiftUI
 import SwiftData
 
 @main
-struct StickItApp: App {
+struct StickItApp: App {    
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .modelContainer(for: [Note.self])
+                .modelContainer(for: Note.self)
         }
     }
 }

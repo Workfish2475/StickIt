@@ -28,8 +28,13 @@ struct iPhoneView: View {
     var body: some View {
         ZStack (alignment: .bottomTrailing) {
             ScrollView {
-                noteSection("Pinned", pinnedNotes)
-                noteSection("General", generalNotes)
+                if (!pinnedNotes.isEmpty) {
+                    noteSection("Pinned", pinnedNotes)
+                }
+                
+                if (!generalNotes.isEmpty) {
+                    noteSection("General", generalNotes)
+                }
             }
             
             .frame(maxWidth: .infinity)
@@ -75,7 +80,7 @@ struct iPhoneView: View {
                 }
             } header: {
                 HStack {
-                    Text("Pinned")
+                    Text("\(title)")
                         .font(.caption.bold())
                         .foregroundStyle(.secondary)
                     
@@ -90,7 +95,7 @@ struct iPhoneView: View {
 }
 
 #Preview ("iPhone Empty View") {
-    iPhoneView()
+    ContentView()
 }
 
 #Preview ("iPhone Populated View") {
@@ -100,9 +105,9 @@ struct iPhoneView: View {
     let context = container.mainContext
 
     let sampleNotes = [
-        Note(name: "Shopping List", content: "# h1 Heading testing \n\n\n\n\n\n", color: ".red", isPinned: false, lastModified: .now),
-        Note(name: "Puppy", content: "testing testing testing ", color: ".green", isPinned: true, lastModified: .now),
-        Note(name: "Work Progress", content: "testing testing testing\n\n\n\n\n\n", color: "orange", isPinned: false, lastModified: .now),
+        Note(name: "Shopping List", content: "- Eggs \n- Milk\n- Bread", color: ".red", isPinned: false, lastModified: .now),
+        Note(name: "Puppy", content: "This is a demo note for the puppy", color: ".green", isPinned: true, lastModified: .now),
+        Note(name: "Work Progress", content: "Work demo note. Do stuff \n \n ", color: "orange", isPinned: false, lastModified: .now),
         Note(name: "testing", content: "Something goes here", color: "red", isPinned: false, lastModified: .now),
     ]
 
@@ -110,6 +115,6 @@ struct iPhoneView: View {
         context.insert(note)
     }
 
-    return iPhoneView()
+    return ContentView()
         .modelContainer(container)
 }

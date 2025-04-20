@@ -55,6 +55,7 @@ struct StickIt_WidgetEntryView : View {
         
         .foregroundStyle(.white)
         .containerBackground(Color(name: entry.configuration.noteItem!.color).opacity(0.8), for: .widget)
+        .widgetURL(URL(string: "stickit//\(entry.configuration.noteItem!.id)"))
     }
 }
 
@@ -84,7 +85,7 @@ extension ConfigurationAppIntent {
     }
 }
 
-#Preview(as: .systemLarge) {
+#Preview(as: .systemExtraLarge) {
     StickIt_Widget()
 } timeline: {
     SimpleEntry(date: .now, configuration: .demo)
