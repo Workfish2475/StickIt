@@ -26,8 +26,6 @@ struct StickIt_MacApp: App {
             }
         }
         
-        
-        
         .defaultSize(CGSize(width: 240, height: 250))
         .windowStyle(.hiddenTitleBar)
         .windowLevel(.floating)

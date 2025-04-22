@@ -9,11 +9,20 @@ import SwiftUI
 import SwiftData
 
 @main
-struct StickItApp: App {    
+struct StickItApp: App {
+    
+//    @Environment(\.scenePhase) private var phase
+//    @StateObject private var store = StoreKitManager()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .modelContainer(for: Note.self)
+//                .task(id: phase) {
+//                    if phase == .active {
+//                        await store.fetchProducts()
+//                    }
+//                }
         }
     }
 }

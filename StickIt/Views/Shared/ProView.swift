@@ -6,11 +6,14 @@
 //
 
 import SwiftUI
+import StoreKit
 
 struct ProView: View {
+    
+    
     var body: some View {
-        Text("Something")
-            .navigationTitle("Tip")
+        SubscriptionStoreView(groupID: "21672814", visibleRelationships: .all)
+            
     }
 }
 

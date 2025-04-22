@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		11AE6A242DB6DFF8004A1E01 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11AE6A232DB6DFF8004A1E01 /* StoreKit.framework */; };
+		11AE6A2A2DB70A1B004A1E01 /* StickIt - Sticky Notes.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 11AE6A292DB70A1B004A1E01 /* StickIt - Sticky Notes.storekit */; };
 		11D354A52DADCC5700514154 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11D354A42DADCC5700514154 /* WidgetKit.framework */; };
 		11D354A72DADCC5700514154 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11D354A62DADCC5700514154 /* SwiftUI.framework */; };
 		11D354B52DADCC5800514154 /* StickIt-WidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 11D354A22DADCC5700514154 /* StickIt-WidgetExtension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -71,6 +73,8 @@
 		1136F5612DAB3AB200B18344 /* StickIt-Mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "StickIt-Mac.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1136F5702DAB3AB400B18344 /* StickIt-MacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "StickIt-MacTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1136F57A2DAB3AB400B18344 /* StickIt-MacUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "StickIt-MacUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		11AE6A232DB6DFF8004A1E01 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		11AE6A292DB70A1B004A1E01 /* StickIt - Sticky Notes.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = "StickIt - Sticky Notes.storekit"; sourceTree = "<group>"; };
 		11D354A22DADCC5700514154 /* StickIt-WidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "StickIt-WidgetExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		11D354A42DADCC5700514154 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = /System/Library/Frameworks/WidgetKit.framework; sourceTree = "<absolute>"; };
 		11D354A62DADCC5700514154 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = /System/Library/Frameworks/SwiftUI.framework; sourceTree = "<absolute>"; };
@@ -97,6 +101,7 @@
 				Misc/Colors.swift,
 				Misc/FlowLayout.swift,
 				Misc/Markdown.swift,
+				Misc/StoreKitManager.swift,
 				Models/NoteViewModel.swift,
 			);
 			target = 1136F5602DAB3AB200B18344 /* StickIt-Mac */;
@@ -120,6 +125,7 @@
 			membershipExceptions = (
 				Misc/Colors.swift,
 				Misc/Markdown.swift,
+				Misc/StoreKitManager.swift,
 			);
 			target = 11D354A12DADCC5700514154 /* StickIt-WidgetExtension */;
 		};
@@ -185,6 +191,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				11AE6A242DB6DFF8004A1E01 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -238,6 +245,7 @@
 		1136F4802DAB337200B18344 = {
 			isa = PBXGroup;
 			children = (
+				11AE6A292DB70A1B004A1E01 /* StickIt - Sticky Notes.storekit */,
 				1136F4BB2DAB342C00B18344 /* SwiftData */,
 				1136F48B2DAB337200B18344 /* StickIt */,
 				1136F49D2DAB337400B18344 /* StickItTests */,
@@ -268,6 +276,7 @@
 		11D354A32DADCC5700514154 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				11AE6A232DB6DFF8004A1E01 /* StoreKit.framework */,
 				11D354A42DADCC5700514154 /* WidgetKit.framework */,
 				11D354A62DADCC5700514154 /* SwiftUI.framework */,
 			);
@@ -505,6 +514,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				11AE6A2A2DB70A1B004A1E01 /* StickIt - Sticky Notes.storekit in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -670,7 +680,7 @@
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -714,7 +724,7 @@
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

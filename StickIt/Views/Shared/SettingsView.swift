@@ -5,6 +5,7 @@
 //  Created by Alexander Rivera on 4/12/25.
 //
 import SwiftUI
+import StoreKit
 
 struct SettingsView: View {
     
@@ -57,6 +58,14 @@ struct SettingsView: View {
         if UIApplication.shared.canOpenURL(mailURL) {
             UIApplication.shared.open(mailURL, options: [:], completionHandler: nil)
          }
+    }
+    
+    func openSubPage() -> Void {
+        dismiss()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            SubscriptionStoreView(groupID: "21672814", visibleRelationships: .all)
+        }
     }
 }
 
