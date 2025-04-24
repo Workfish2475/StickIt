@@ -23,6 +23,8 @@ class NoteViewModel {
     var changingColor: Bool = false
     var isEditing: Bool = false
     
+    var isShowingHeader: Bool = false
+    
     func setNote(_ note: Note) {
         self.noteItem = note
         self.titleField = note.name

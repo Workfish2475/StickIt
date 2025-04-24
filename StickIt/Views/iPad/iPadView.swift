@@ -77,6 +77,7 @@ struct iPadView: View {
                         NoteItem(noteItem: note)
                             .matchedTransitionSource(id: note.persistentModelID, in: namespace)
                             .frame(width: 275, height: 200)
+                            .frame(maxWidth: 275, maxHeight: 200)
                     }
                 }
             }

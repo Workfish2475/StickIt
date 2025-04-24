@@ -12,8 +12,7 @@ struct ProView: View {
     
     
     var body: some View {
-        SubscriptionStoreView(groupID: "21672814", visibleRelationships: .all)
-            
+        Text("Something")
     }
 }
 

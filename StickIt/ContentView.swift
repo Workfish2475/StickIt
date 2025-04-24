@@ -92,7 +92,7 @@ struct ContentView: View {
         Note(name: "Shopping List", content: "# h1 Heading testing", color: ".red", isPinned: false, lastModified: .now),
         Note(name: "Puppy", content: "testing testing testing", color: ".green", isPinned: true, lastModified: .now),
         Note(name: "Work Progress", content: "testing testing testing", color: "orange", isPinned: false, lastModified: .now),
-        Note(name: "testing", content: "Something goes here", color: "red", isPinned: false, lastModified: .now),
+        Note(name: "testing", content: "[ ] Something\n[ ] Another thing\n[ ] Last thing\n[ ] Done\n[ ] testing \n[ ] test", color: "red", isPinned: false, lastModified: .now),
     ]
 
     for note in sampleNotes {

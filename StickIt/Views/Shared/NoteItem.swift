@@ -19,13 +19,16 @@ struct NoteItem: View {
                 .font(.caption.bold())
                 .foregroundStyle(.secondary)
             
-            ZStack (alignment: .topLeading) {
+            ZStack (alignment: .leading) {
                 RoundedRectangle(cornerRadius: 10)
                     .foregroundStyle(Color(name: noteItem.color))
-                Text("\(noteItem.content)")
-                    .font(.caption)
+                
+                Markdown(markdownText: noteItem.content, limit: true)
+                    .scaleEffect(0.75)
                     .multilineTextAlignment(.leading)
-                    .padding()
+                    .frame(maxHeight: 100)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .disabled(true)
             }
         }
         
@@ -34,7 +37,7 @@ struct NoteItem: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(
             RoundedRectangle(cornerRadius: 10)
-                .fill(Color(name: noteItem.color).opacity(0.8).gradient)
+                .fill(Color(name: noteItem.color).opacity(0.9).gradient)
         )
     }
     

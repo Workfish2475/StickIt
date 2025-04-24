@@ -40,7 +40,7 @@ struct StickIt_WidgetEntryView : View {
             Text("Last modified \(entry.date.formatted(.dateTime.hour().minute()))")
                 .font(.caption)
                 .foregroundStyle(.secondary)
-            Text(.init("\(entry.configuration.noteItem!.content)"))
+            Markdown(markdownText: entry.configuration.noteItem!.content)
                 .multilineTextAlignment(.leading)
                 .font(.system(size: 16, weight: .regular, design: .default))
                 .padding()

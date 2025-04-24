@@ -18,11 +18,11 @@ struct iPhoneView: View {
     let columns = Array(repeating: GridItem(.flexible()), count: 2)
     
     var pinnedNotes: [Note] {
-        return notes.filter { $0.isPinned }
+        return notes.filter { $0.isPinned }.sorted { $0.lastModified > $1.lastModified }
     }
     
     var generalNotes: [Note] {
-        return notes.filter { !$0.isPinned }
+        return notes.filter { !$0.isPinned }.sorted { $0.lastModified > $1.lastModified }
     }
     
     var body: some View {
@@ -76,6 +76,7 @@ struct iPhoneView: View {
                         NoteItem(noteItem: note)
                             .matchedTransitionSource(id: note.persistentModelID, in: namespace)
                             .frame(width: 175, height: 175)
+                            .frame(maxWidth: 175, maxHeight: 175)
                     }
                 }
             } header: {
