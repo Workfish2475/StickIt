@@ -10,8 +10,11 @@ import SwiftUI
 //TODO: Work on regex rule for detecting links in markdown format
 struct Markdown: View {
     
-    @State var markdownText: String
+    @Binding var markdownText: String
+    @State var viewModel: NoteViewModel?
+    
     var limit: Bool? = false
+    
     @State private var markdownLines: [String] = []
       
     var body: some View {
@@ -39,34 +42,34 @@ struct Markdown: View {
             Spacer()
         }
         
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-        
         .onAppear() {
             markdownLines = markdownText.components(separatedBy: .newlines)
         }
     }
     
+    // FIXME: Still some trouble with detecting links that don't include ```https://```
     private func linkView(_ line: String) -> some View {
-        let firstIndex = line.firstIndex(of: "(")!
-        let lastIndex = line.firstIndex(of: ")")!
-        
-        var link = line[firstIndex...lastIndex].dropFirst().dropLast()
-        var modifiedLine = line
-        modifiedLine = modifiedLine.replacingOccurrences(of: "(https://[.a-zA-Z]*)", with: "", options: .regularExpression)
-        modifiedLine = modifiedLine.replacingOccurrences(of: "[\\[\\]()]+", with: "", options: .regularExpression)
-        
-        return Label(modifiedLine.capitalized, systemImage: "safari")
-            .underline()
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(.black.opacity(0.4))
+        if let firstIdx = line.firstIndex(of: "("), let lastIdx = line.firstIndex(of: ")") {
+            var modifiedLine = line
+            modifiedLine = modifiedLine.replacingOccurrences(of: "(https://[.a-zA-Z]*)", with: "", options: .regularExpression)
+            modifiedLine = modifiedLine.replacingOccurrences(of: "[\\[\\]()]+", with: "", options: .regularExpression)
+            
+            return AnyView (
+                Link(destination: URL(string: String(line[firstIdx...lastIdx].dropFirst().dropLast()))!) {
+                    Label(modifiedLine.capitalized, systemImage: "safari")
+                        .padding(10)
+                        .underline()
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color.black.opacity(0.2))
+                        )
+                        .padding(.vertical, 10)
+                        .fontWeight(.bold)
+                }
             )
-            .padding(.vertical)
-            .fontWeight(.bold)
-            .onTapGesture {
-                
-            }
+        }
+        
+        return AnyView(Text(line))
     }
 
     
@@ -98,6 +101,13 @@ struct Markdown: View {
         withAnimation {
             markdownLines[index] = str
         }
+        
+        markdownText = markdownLines.joined(separator: "\n")
+        guard let viewModel else {
+            return
+        }
+        
+        viewModel.updateLastModified()
     }
     
     private func headerView(_ line: String) -> some View {
@@ -129,11 +139,17 @@ struct Markdown: View {
         textContent.removeAll(where: {$0 == "`"})
         
         return Text(textContent)
-            .font(.system(size: 13, weight: .bold, design: .monospaced))
+            .font(.system(size: 15, weight: .semibold, design: .monospaced))
             .padding()
             .background(
-                RoundedRectangle(cornerRadius: 5)
-                    .fill(.black.opacity(0.4))
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(.black.opacity(0.2))
             )
     }
+}
+
+#Preview ("Markdown") {
+    Markdown(markdownText: .constant("\(Note.self.placeholder2.content)"))
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
 }

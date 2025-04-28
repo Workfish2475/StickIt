@@ -89,6 +89,14 @@ class NoteViewModel {
         isEditing = false
     }
     
+    func updateContent(_ newText: String) -> Void {
+        if let existingNote = noteItem {
+            existingNote.content = newText
+        }
+        
+        updateLastModified()
+    }
+    
     func updateLastModified() -> Void {
         self.lastModified = Date.now
         

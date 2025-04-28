@@ -29,33 +29,44 @@ struct SimpleEntry: TimelineEntry {
     let configuration: ConfigurationAppIntent
 }
 
-struct StickIt_WidgetEntryView : View {
+struct StickIt_WidgetEntryView: View {
     var entry: NoteProvider.Entry
 
     var body: some View {
-        VStack (alignment: .leading) {
-            Text("\(entry.configuration.noteItem!.name)")
-                .font(.headline)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            Text("Last modified \(entry.date.formatted(.dateTime.hour().minute()))")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            Markdown(markdownText: entry.configuration.noteItem!.content)
-                .multilineTextAlignment(.leading)
-                .font(.system(size: 16, weight: .regular, design: .default))
-                .padding()
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                .background(
+        GeometryReader { geo in
+            VStack(alignment: .leading) {
+                headerView()
+
+                ZStack(alignment: .topLeading) {
                     RoundedRectangle(cornerRadius: 10)
                         .fill(Color(name: entry.configuration.noteItem!.color))
-                )
+
+                    Markdown(markdownText: .constant(" \(entry.configuration.noteItem!.content)"), limit: false)
+                        .padding()
+                }
+                
+                .frame(maxWidth: .infinity)
+                .frame(height: geo.size.height - 50, alignment: .top)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
             
-            Spacer()
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
-        
         .foregroundStyle(.white)
         .containerBackground(Color(name: entry.configuration.noteItem!.color).opacity(0.8), for: .widget)
         .widgetURL(URL(string: "stickit//\(entry.configuration.noteItem!.id)"))
+    }
+    
+    @ViewBuilder
+    func headerView() -> some View {
+        Text("\(entry.configuration.noteItem!.name)")
+            .font(.headline)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        
+        Text("Last modified \(entry.date.formatted(.dateTime.hour().minute()))")
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

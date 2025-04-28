@@ -14,7 +14,22 @@ struct NoteView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     
+    @State private var scrollOffset: CGFloat = 0
+    
+    @State var text = ""
+    @State var selection = NSRange(location: 0, length: 0)
+    
     @State private var viewModel: NoteViewModel = NoteViewModel()
+    
+    private var backgroundMaterial: some View {
+        Group {
+            if scrollOffset < -10 {
+                Color.clear.background(.ultraThinMaterial)
+            } else {
+                Color.clear
+            }
+        }
+    }
     
     var body: some View {
         GeometryReader { geo in
@@ -33,15 +48,15 @@ struct NoteView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     
-                    .padding([.top, .horizontal])
+                    .padding([.horizontal])
                     
                     Group {
                         if viewModel.isEditing {
                             textEditingView()
-                                .frame(minHeight: geo.size.height * 0.6, maxHeight: .infinity, alignment: .top)
+                                .frame(minHeight: geo.size.height * 0.8, maxHeight: .infinity, alignment: .top)
                         } else {
                             markdownPresentation()
-                                .frame(minHeight: geo.size.height * 0.6, maxHeight: .infinity, alignment: .top)
+                                .frame(minHeight: geo.size.height * 0.8, maxHeight: .infinity, alignment: .top)
                                 .onTapGesture {
                                     withAnimation {
                                         viewModel.isEditing.toggle()
@@ -51,76 +66,105 @@ struct NoteView: View {
                     }
                 }
                 
-                .frame(minHeight: geo.size.height, alignment: .top)
+                .frame(minHeight: geo.size.height * 0.9, alignment: .top)
+                .background(
+                        GeometryReader { proxy in
+                            Color.clear
+                                .preference(key: ScrollOffsetKey.self, value: proxy.frame(in: .named("scroll")).minY)
+                        }
+                    )
+            }
+            
+            .scrollIndicators(.hidden)
+            .coordinateSpace(name: "scroll")
+            .onPreferenceChange(ScrollOffsetKey.self) { value in
+                scrollOffset = value
+            }
+            
+            .onTapGesture {
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                viewModel.updateLastModified()
+                viewModel.saveNote(context)
+            }
+            
+            .safeAreaInset(edge: .top) {
+                titleBar()
+            }
+            
+            .ignoresSafeArea(.keyboard)
+            .toolbarVisibility(.hidden, for: .navigationBar)
+            .background(Color(name: viewModel.noteColor).opacity(0.6))
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                        EmptyView()
+                    }
+                
+                keyboardToolbar
+            }
+        }
+
+        .task {
+            if let note = noteItem {
+                viewModel.setNote(note)
             }
         }
         
-        .onTapGesture {
-            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-            
-            viewModel.updateLastModified()
+        .onDisappear() {
             viewModel.saveNote(context)
         }
-        
-        .ignoresSafeArea(.keyboard)
-        .background(Color(name: viewModel.noteColor).opacity(0.6))
-        .toolbarBackground(Color(name: viewModel.noteColor).opacity(0.6), for: .navigationBar)
-        .toolbar {
-            ToolbarItem (placement: .keyboard) {
+    }
+    
+    func textEditingView() -> some View {
+        TextEditor(text: $viewModel.contentField)
+            .padding()
+            .tint(.white)
+            .font(.body)
+            .textEditorStyle(.plain)
+            .foregroundStyle(.white)
+            .submitLabel(.return)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color(Color(name: viewModel.noteColor).opacity(0.8)))
+            )
+            .padding()
+            .onSubmit {
+                viewModel.updateContent()
+            }
+    }
+    
+    private func titleBar() -> some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                Image(systemName: "x.circle.fill")
+                    .symbolRenderingMode(.multicolor)
+                    .imageScale(.large)
+            }
+            
+            Spacer()
+            
+            if viewModel.isEditing {
                 Button {
-                    viewModel.isShowingHeader.toggle()
+                    viewModel.saveNote(context)
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    
+                    withAnimation(.bouncy) {
+                        viewModel.isEditing.toggle()
+                    }
                 } label: {
-                    Image(systemName: "h.square.fill")
+                    Text("Done")
                         .fontWeight(.bold)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(Color(name: viewModel.noteColor))
+                        .foregroundColor(.white)
+                        .clipShape(Capsule())
                 }
                 
-                .popover(isPresented: $viewModel.isShowingHeader) {
-                    HStack {
-                        ForEach(1..<5) { num in
-                            Button {
-                                let addition = String(repeating: "#", count: num)
-                                viewModel.contentField += "\n\(addition) "
-                                viewModel.isShowingHeader.toggle()
-                            } label: {
-                                Image(systemName: "\(num).square.fill")
-                                    .fontWeight(.bold)
-                            }
-                        }
-                    }
-                    
-                    .padding()
-                    .presentationCompactAdaptation(.popover)
-                }
-            }
-            
-            ToolbarItem (placement: .keyboard) {
-                Button {
-                    viewModel.contentField += "\n[ ]( )"
-                } label: {
-                    Image(systemName: "link.circle.fill")
-                        .fontWeight(.bold)
-                }
-            }
-            
-            ToolbarItem (placement: .keyboard) {
-                Button {
-                    viewModel.contentField += "\n```\n\n```"
-                } label: {
-                    Image(systemName: "hammer.circle.fill")
-                        .fontWeight(.bold)
-                }
-            }
-            
-            ToolbarItem (placement: .keyboard) {
-                Button {
-                    viewModel.contentField += "\n[ ] "
-                } label: {
-                    Image(systemName: "checkmark.square.fill")
-                        .fontWeight(.bold)
-                }
-            }
-            
-            ToolbarItem {
+                .transition(.move(edge: .trailing).combined(with: .opacity))
+                
+            } else {
                 Menu {
                     Button {
                         viewModel.updatePinned()
@@ -151,62 +195,61 @@ struct NoteView: View {
                     .disabled(viewModel.noteItem == nil)
                 } label: {
                     Image(systemName: "ellipsis.circle")
-                }
-            }
-            
-            if (viewModel.isEditing) {
-                ToolbarItem (placement: .topBarTrailing)  {
-                    Button {
-                        viewModel.saveNote(context)
-                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                        
-                        withAnimation {
-                            viewModel.isEditing.toggle()
-                        }
-                    } label: {
-                        Text("Done")
-                    }
-                    
-                    .buttonStyle(.borderedProminent)
+                        .imageScale(.large)
                 }
             }
         }
         
-        .task {
-            if let note = noteItem {
-                viewModel.setNote(note)
-            }
-        }
-        
-        .onDisappear() {
-            viewModel.saveNote(context)
-        }
+        .tint(Color(name: viewModel.noteColor))
+        .padding()
+        .animation(.bouncy, value: viewModel.isEditing)
+        .background(backgroundMaterial)
     }
     
-    func textEditingView() -> some View {
-        TextEditor(text: $viewModel.contentField)
-            .padding()
-            .tint(.white)
-            .font(.body)
-            .textEditorStyle(.plain)
-            .foregroundStyle(.white)
-            .submitLabel(.return)
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(Color(name: viewModel.noteColor).opacity(0.8)))
-            )
-            .padding()
-            .onSubmit {
-                viewModel.updateContent()
+    private var keyboardToolbar: some ToolbarContent {
+            ToolbarItemGroup(placement: .keyboard) {
+                Button {
+                    viewModel.isShowingHeader.toggle()
+                } label: {
+                    Image(systemName: "h.square.fill").fontWeight(.bold)
+                }
+                .popover(isPresented: $viewModel.isShowingHeader) {
+                    HStack {
+                        ForEach(1..<5) { num in
+                            Button {
+                                let addition = String(repeating: "#", count: num)
+                                viewModel.contentField += "\n\(addition) "
+                                viewModel.isShowingHeader.toggle()
+                            } label: {
+                                Image(systemName: "\(num).square.fill")
+                                    .fontWeight(.bold)
+                            }
+                        }
+                    }
+                    .padding()
+                    .presentationCompactAdaptation(.popover)
+                }
+
+                Button { viewModel.contentField += "\n[ ]( )" } label: {
+                    Image(systemName: "link.circle.fill").fontWeight(.bold)
+                }
+
+                Button { viewModel.contentField += "\n```\n\n```" } label: {
+                    Image(systemName: "hammer.circle.fill").fontWeight(.bold)
+                }
+
+                Button { viewModel.contentField += "\n[ ] " } label: {
+                    Image(systemName: "checkmark.square.fill").fontWeight(.bold)
+                }
             }
-    }
+        }
     
     func markdownPresentation() -> some View {
-        Markdown(markdownText: viewModel.contentField)
+        Markdown(markdownText: $viewModel.contentField, viewModel: viewModel)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             .id(viewModel.contentField)
             .padding()
             .foregroundStyle(.white)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: 10)
                     .fill(Color(Color(name: viewModel.noteColor).opacity(0.8)))
@@ -215,6 +258,18 @@ struct NoteView: View {
     }
 }
 
+
+// Credit: https://medium.com/@felipaugsts/detect-scroll-position-swiftui-86ff2b8fda82
+private struct ScrollOffsetKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value += nextValue()
+    }
+}
+
+
 #Preview {
-    NoteView(noteItem: .placeholder)
+    NavigationStack {
+        NoteView(noteItem: .placeholder)
+    }
 }

@@ -14,6 +14,7 @@ struct iPhoneView: View {
     @Namespace private var namespace
     @State private var showingEntry: Bool = false
     @Environment(\.colorScheme) private var scheme
+    @Environment(\.modelContext) private var context
     
     let columns = Array(repeating: GridItem(.flexible()), count: 2)
     

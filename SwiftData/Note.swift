@@ -60,8 +60,16 @@ class Note: Codable {
     
     static let placeholder: Note = Note(
         name: "Shopping List",
-        content: "#### Things to do \n[ ] something \n[ ] something \n###Code \n```private func something() {}```\n[google](https://www.google.com)\n# Something",
+        content: "#### Things to do \n[ ] something \n[ ] something \n###Code \n```private func something() {}```\n[google](https://www.google.com)\n# Something something to do would be nice \n shit",
         color: "orange",
+        isPinned: false,
+        lastModified: Date.distantPast
+    )
+    
+    static let placeholder2: Note = Note(
+        name: "Daily Note",
+        content: "#### TODO",
+        color: "brown",
         isPinned: false,
         lastModified: Date.distantPast
     )

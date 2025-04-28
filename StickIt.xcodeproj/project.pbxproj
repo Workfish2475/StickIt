@@ -126,6 +126,8 @@
 				Misc/Colors.swift,
 				Misc/Markdown.swift,
 				Misc/StoreKitManager.swift,
+				Misc/UITextViewWrapper.swift,
+				Models/NoteViewModel.swift,
 			);
 			target = 11D354A12DADCC5700514154 /* StickIt-WidgetExtension */;
 		};
