@@ -19,6 +19,8 @@ struct NoteView: View {
     @State var text = ""
     @State var selection = NSRange(location: 0, length: 0)
     
+    @FocusState private var hasFocus
+    
     @State private var viewModel: NoteViewModel = NoteViewModel()
     
     private var backgroundMaterial: some View {
@@ -61,6 +63,8 @@ struct NoteView: View {
                                     withAnimation {
                                         viewModel.isEditing.toggle()
                                     }
+                                    
+                                    hasFocus.toggle()
                                 }
                         }
                     }
@@ -75,6 +79,8 @@ struct NoteView: View {
                     )
             }
             
+            .ignoresSafeArea(.keyboard)
+            .scrollDismissesKeyboard(.interactively)
             .scrollIndicators(.hidden)
             .coordinateSpace(name: "scroll")
             .onPreferenceChange(ScrollOffsetKey.self) { value in
@@ -82,7 +88,7 @@ struct NoteView: View {
             }
             
             .onTapGesture {
-                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                dismissKeyboard()
                 viewModel.updateLastModified()
                 viewModel.saveNote(context)
             }
@@ -91,7 +97,8 @@ struct NoteView: View {
                 titleBar()
             }
             
-            .ignoresSafeArea(.keyboard)
+            .sensoryFeedback(.impact, trigger: viewModel.isEditing)
+            
             .toolbarVisibility(.hidden, for: .navigationBar)
             .background(Color(name: viewModel.noteColor).opacity(0.6))
             .toolbar {
@@ -114,8 +121,13 @@ struct NoteView: View {
         }
     }
     
+    func dismissKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+    
     func textEditingView() -> some View {
         TextEditor(text: $viewModel.contentField)
+            .focused($hasFocus)
             .padding()
             .tint(.white)
             .font(.body)
@@ -140,6 +152,7 @@ struct NoteView: View {
                 Image(systemName: "x.circle.fill")
                     .symbolRenderingMode(.multicolor)
                     .imageScale(.large)
+                    .fontWeight(.bold)
             }
             
             Spacer()
@@ -208,38 +221,65 @@ struct NoteView: View {
     
     private var keyboardToolbar: some ToolbarContent {
             ToolbarItemGroup(placement: .keyboard) {
-                Button {
-                    viewModel.isShowingHeader.toggle()
-                } label: {
-                    Image(systemName: "h.square.fill").fontWeight(.bold)
-                }
-                .popover(isPresented: $viewModel.isShowingHeader) {
-                    HStack {
-                        ForEach(1..<5) { num in
-                            Button {
-                                let addition = String(repeating: "#", count: num)
-                                viewModel.contentField += "\n\(addition) "
-                                viewModel.isShowingHeader.toggle()
-                            } label: {
-                                Image(systemName: "\(num).square.fill")
-                                    .fontWeight(.bold)
+                HStack {
+                    Button {
+                        viewModel.isShowingHeader.toggle()
+                    } label: {
+                        Image(systemName: "h.square.fill")
+                            .fontWeight(.bold)
+                            .frame(width: 50, height: 35)
+                            .foregroundStyle(.white)
+                            .background(Capsule().fill(Color(name: viewModel.noteColor)))
+                    }
+                    .popover(isPresented: $viewModel.isShowingHeader) {
+                        HStack {
+                            ForEach(1..<5) { num in
+                                Button {
+                                    let addition = String(repeating: "#", count: num)
+                                    viewModel.contentField += "\n\(addition) "
+                                    viewModel.isShowingHeader.toggle()
+                                } label: {
+                                    Image(systemName: "\(num).square.fill")
+                                        .fontWeight(.bold)
+                                }
                             }
                         }
+                        .padding()
+                        .presentationCompactAdaptation(.popover)
                     }
-                    .padding()
-                    .presentationCompactAdaptation(.popover)
-                }
+                    
+                    Button { viewModel.contentField += "\n[ ]( )" } label: {
+                        Image(systemName: "link")
+                            .fontWeight(.bold)
+                            .frame(width: 50, height: 35)
+                            .foregroundStyle(.white)
+                            .background(Capsule().fill(Color(name: viewModel.noteColor)))
+                    }
 
-                Button { viewModel.contentField += "\n[ ]( )" } label: {
-                    Image(systemName: "link.circle.fill").fontWeight(.bold)
-                }
+                    Button { viewModel.contentField += "\n```\n\n```" } label: {
+                        Image(systemName: "hammer.fill").fontWeight(.bold)
+                            .fontWeight(.bold)
+                            .frame(width: 50, height: 35)
+                            .foregroundStyle(.white)
+                            .background(Capsule().fill(Color(name: viewModel.noteColor)))
+                    }
 
-                Button { viewModel.contentField += "\n```\n\n```" } label: {
-                    Image(systemName: "hammer.circle.fill").fontWeight(.bold)
-                }
-
-                Button { viewModel.contentField += "\n[ ] " } label: {
-                    Image(systemName: "checkmark.square.fill").fontWeight(.bold)
+                    Button { viewModel.contentField += "\n[ ] " } label: {
+                        Image(systemName: "checkmark.square.fill")
+                            .fontWeight(.bold)
+                            .frame(width: 50, height: 35)
+                            .foregroundStyle(.white)
+                            .background(Capsule().fill(Color(name: viewModel.noteColor)))
+                    }
+                    
+                    Spacer()
+                    
+                    Button { dismissKeyboard() } label: {
+                        Image(systemName: "arrow.down")
+                            .symbolRenderingMode(.hierarchical)
+                            .foregroundStyle(.gray)
+                            .fontWeight(.bold)
+                    }
                 }
             }
         }
@@ -257,7 +297,6 @@ struct NoteView: View {
             .padding()
     }
 }
-
 
 // Credit: https://medium.com/@felipaugsts/detect-scroll-position-swiftui-86ff2b8fda82
 private struct ScrollOffsetKey: PreferenceKey {

@@ -14,14 +14,62 @@
 
   ],
   "products" : [
-
+    {
+      "displayPrice" : "9.99",
+      "familyShareable" : false,
+      "internalID" : "6745191141",
+      "localizations" : [
+        {
+          "description" : "A large tip if you're feeling generous.",
+          "displayName" : "Large Tip",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "tip3",
+      "referenceName" : "Large Tip",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "4.99",
+      "familyShareable" : false,
+      "internalID" : "6745191013",
+      "localizations" : [
+        {
+          "description" : "A medium tip if you're feeling generous.",
+          "displayName" : "Medium Tip",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "tip2",
+      "referenceName" : "Medium Tip",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "6745190805",
+      "localizations" : [
+        {
+          "description" : "A small tip if you're feeling generous.",
+          "displayName" : "Small Tip",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "tip1",
+      "referenceName" : "Small Tip",
+      "type" : "Consumable"
+    }
   ],
   "settings" : {
     "_applicationInternalID" : "6744903850",
+    "_askToBuyEnabled" : true,
+    "_billingGracePeriodEnabled" : true,
+    "_billingIssuesEnabled" : true,
     "_developerTeamID" : "79M6SRJ28R",
     "_failTransactionsEnabled" : false,
-    "_lastSynchronizedDate" : 766970398.12877905,
+    "_lastSynchronizedDate" : 767571499.31716597,
     "_locale" : "en_US",
+    "_renewalBillingIssuesEnabled" : true,
     "_storefront" : "USA",
     "_storeKitErrors" : [
       {
@@ -72,39 +120,7 @@
     ]
   },
   "subscriptionGroups" : [
-    {
-      "id" : "21672814",
-      "localizations" : [
 
-      ],
-      "name" : "Subscriptions",
-      "subscriptions" : [
-        {
-          "adHocOffers" : [
-
-          ],
-          "codeOffers" : [
-
-          ],
-          "displayPrice" : "1.99",
-          "familyShareable" : false,
-          "groupNumber" : 1,
-          "internalID" : "6744903884",
-          "introductoryOffer" : null,
-          "localizations" : [
-
-          ],
-          "productID" : "ProBasic",
-          "recurringSubscriptionPeriod" : "P1M",
-          "referenceName" : "Supporter",
-          "subscriptionGroupID" : "21672814",
-          "type" : "RecurringSubscription",
-          "winbackOffers" : [
-
-          ]
-        }
-      ]
-    }
   ],
   "version" : {
     "major" : 4,

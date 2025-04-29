@@ -41,7 +41,7 @@ struct StickIt_WidgetEntryView: View {
                     RoundedRectangle(cornerRadius: 10)
                         .fill(Color(name: entry.configuration.noteItem!.color))
 
-                    Markdown(markdownText: .constant(" \(entry.configuration.noteItem!.content)"), limit: false)
+                    Markdown(markdownText: .constant("\(entry.configuration.noteItem!.content)"), limit: false)
                         .padding()
                 }
                 

@@ -17,6 +17,9 @@ struct ContentView: View {
     
     @Environment(\.modelContext) private var context
     
+    @AppStorage("appearance") private var appearance: Appearance = .system
+    @AppStorage("showingNew") private var showingNew: Bool = true
+    
     // MARK: - gets current device type (phone or pad)
     var currentDevice: UIUserInterfaceIdiom {
         return UIDevice.current.userInterfaceIdiom
@@ -41,8 +44,16 @@ struct ContentView: View {
             }
         }
         
+        .preferredColorScheme(appearance.colorScheme)
+        
         .sheet(isPresented: $showingSettings) {
             SettingsView()
+        }
+        
+        .sheet(isPresented: $showingNew) {
+            NavigationStack {
+                WhatsNew()
+            }
         }
         
         .onOpenURL { url in
@@ -83,6 +94,9 @@ struct ContentView: View {
 }
     
 #Preview {
+    let defaults = UserDefaults.standard
+    defaults.set(true, forKey: "showingNew")
+    
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
     let container = try! ModelContainer(for: Note.self, configurations: config)
 
