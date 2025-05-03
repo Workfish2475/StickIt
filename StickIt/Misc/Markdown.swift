@@ -23,19 +23,23 @@ struct Markdown: View {
             let linesToShow = limit == true ? Array(markdownLines.prefix(3)) : markdownLines
             
             ForEach(linesToShow.indices, id: \.self) { index in
-                let line = markdownLines[index]
+                let line = parseLine(markdownLines[index])
                 
-                if (line.hasPrefix("#")) {
-                    headerView(line)
-                } else if (line.hasPrefix("[x]") || line.hasPrefix("[ ]")) {
-                    checkboxView(line, index)
-                } else if (line.hasPrefix("```")) {
-                    codeBlockView(line)
-                } else if (line.hasPrefix("[google]")) {
-                    linkView(line)
-                } else {
-                    Text(line)
+                switch line {
+                    case .header(let level):
+                        headerView(markdownLines[index])
+                    case .checkbox:
+                        checkboxView(markdownLines[index], index)
+                    case .link:
+                        linkView(markdownLines[index])
+                    case .codeBlock:
+                        codeBlockView(markdownLines[index])
+                    case .paragraph:
+                        Text(markdownLines[index])
                         .font(.body)
+                    default:
+                        Text(markdownLines[index])
+                            .font(.body)
                 }
             }
             
@@ -47,26 +51,65 @@ struct Markdown: View {
         }
     }
     
-    // FIXME: Still some trouble with detecting links that don't include ```https://```
+    private func parseLine(_ line: String) -> LineType {
+        do {
+            let headerPattern = try Regex("^(#+)\\s+")
+            let checkboxPattern = try Regex("^\\[( |x)\\]")
+            let codeBlockPattern = try Regex("^```[a-zA-Z]*")
+            let linkPattern = try Regex("\\[.*?\\]\\(.*?\\)")
+
+            if let match = line.firstMatch(of: headerPattern) {
+                let level = match.output.count
+                return .header(level)
+            }
+
+            if line.firstMatch(of: checkboxPattern) != nil {
+                return .checkbox
+            }
+
+            if line.firstMatch(of: codeBlockPattern) != nil {
+                return .codeBlock
+            }
+
+            if line.firstMatch(of: linkPattern) != nil {
+                return .link
+            }
+
+        } catch {
+            print("Regex error: \(error.localizedDescription)")
+        }
+
+        return .paragraph
+    }
+
+    
+    // TODO: Need to be able to just take input and infer destination. google.com, www.youtube.com, etc.
     private func linkView(_ line: String) -> some View {
+        
         if let firstIdx = line.firstIndex(of: "("), let lastIdx = line.firstIndex(of: ")") {
-            var modifiedLine = line
-            modifiedLine = modifiedLine.replacingOccurrences(of: "(https://[.a-zA-Z]*)", with: "", options: .regularExpression)
-            modifiedLine = modifiedLine.replacingOccurrences(of: "[\\[\\]()]+", with: "", options: .regularExpression)
-            
-            return AnyView (
-                Link(destination: URL(string: String(line[firstIdx...lastIdx].dropFirst().dropLast()))!) {
-                    Label(modifiedLine.capitalized, systemImage: "safari")
-                        .padding(10)
-                        .underline()
-                        .background(
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(Color.black.opacity(0.2))
-                        )
-                        .padding(.vertical, 10)
-                        .fontWeight(.bold)
+            if let titleFirstIdx = line.firstIndex(of: "["), let titleLastIdx = line.firstIndex(of: "]") {
+                let title = String(line[titleFirstIdx...titleLastIdx].capitalized).dropFirst().dropLast()
+                
+                var link = String(line[firstIdx...lastIdx]).dropFirst().dropLast()
+                
+                if !link.hasPrefix("https://") && !link.hasPrefix("http://") {
+                    link = "https://" + link
                 }
-            )
+                
+                return AnyView (
+                    Link(destination: URL(string: String(link))!) {
+                        Label(title, systemImage: "safari")
+                            .padding(10)
+                            .underline()
+                            .background(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(Color.black.opacity(0.2))
+                            )
+                            .padding(.vertical, 10)
+                            .fontWeight(.bold)
+                    }
+                )
+            }
         }
         
         return AnyView(Text(line))
@@ -146,6 +189,17 @@ struct Markdown: View {
                     .fill(.black.opacity(0.2))
             )
     }
+}
+
+enum LineType {
+    case header(Int)
+    case paragraph
+    case codeBlock
+    case listItem
+    case blockQuote
+    case link
+    case checkbox
+    case unknown
 }
 
 #Preview ("Markdown") {

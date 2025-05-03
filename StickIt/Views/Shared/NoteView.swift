@@ -56,6 +56,7 @@ struct NoteView: View {
                         if viewModel.isEditing {
                             textEditingView()
                                 .frame(minHeight: geo.size.height * 0.8, maxHeight: .infinity, alignment: .top)
+                                .ignoresSafeArea(.keyboard, edges: .bottom)
                         } else {
                             markdownPresentation()
                                 .frame(minHeight: geo.size.height * 0.8, maxHeight: .infinity, alignment: .top)
@@ -79,7 +80,6 @@ struct NoteView: View {
                     )
             }
             
-            .ignoresSafeArea(.keyboard)
             .scrollDismissesKeyboard(.interactively)
             .scrollIndicators(.hidden)
             .coordinateSpace(name: "scroll")
@@ -126,22 +126,31 @@ struct NoteView: View {
     }
     
     func textEditingView() -> some View {
-        TextEditor(text: $viewModel.contentField)
-            .focused($hasFocus)
-            .padding()
-            .tint(.white)
-            .font(.body)
-            .textEditorStyle(.plain)
-            .foregroundStyle(.white)
-            .submitLabel(.return)
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(Color(name: viewModel.noteColor).opacity(0.8)))
-            )
-            .padding()
-            .onSubmit {
-                viewModel.updateContent()
-            }
+        ScrollViewReader { proxy in
+            TextEditor(text: $viewModel.contentField)
+                .focused($hasFocus)
+                .id("textEditor")
+                .tint(.white)
+                .font(.body)
+                .textEditorStyle(.plain)
+                .foregroundStyle(.white)
+                .submitLabel(.return)
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color(Color(name: viewModel.noteColor).opacity(0.8)))
+                )
+                .padding()
+                
+                .onSubmit {
+                    viewModel.updateContent()
+                }
+                
+                .onChange(of: viewModel.contentField) {
+                    proxy.scrollTo("textEditor", anchor: .bottom)
+                }
+        }
+        
     }
     
     private func titleBar() -> some View {

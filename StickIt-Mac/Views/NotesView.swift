@@ -29,7 +29,7 @@ struct NotesView: View {
             
             .padding([.top, .horizontal])
             
-            Text("Last modified: \(viewModel.getDate()) at \(viewModel.getTime())")
+            Text("Last modified \(viewModel.getDate()) at \(viewModel.getTime())")
                 .font(.footnote.bold())
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -51,6 +51,10 @@ struct NotesView: View {
                 }
             
             Spacer()
+        }
+        
+        .safeAreaInset(edge: .bottom) {
+            toolView()
         }
         
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -118,6 +122,43 @@ struct NotesView: View {
             return "\(viewModel.lastModified.formatted(.dateTime.hour().minute()))"
         } else {
             return "\(viewModel.lastModified.formatted(.dateTime.day().month().year()))"
+        }
+    }
+    
+    func toolView() -> some View {
+        HStack {
+            labelItem("Header", "h.square.fill")
+            
+            Divider()
+                .frame(maxHeight: 30)
+            
+            labelItem("Link", "h.square.fill")
+            
+            Divider()
+                .frame(maxHeight: 30)
+            
+            labelItem("Code", "h.square.fill")
+            
+            Divider()
+                .frame(maxHeight: 30)
+            
+            labelItem("Checkmark", "h.square.fill")
+        }
+        
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color(name: viewModel.noteColor).opacity(0.8))
+        )
+        .padding()
+    }
+    
+    func labelItem(_ title: String,_ image: String) -> some View {
+        VStack {
+            Image(systemName: "\(image)")
+                .imageScale(.large)
+            Text("\(title)")
+                .font(.subheadline)
         }
     }
 }

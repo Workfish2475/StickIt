@@ -19,47 +19,58 @@ struct StickyView: View {
     @Environment(\.modelContext) private var context
     
     var body: some View {
-        VStack (alignment: .leading) {
-            HStack (alignment: .center) {
-                VStack (alignment: .leading, spacing: 2) {
-                    TextField("", text: $viewModel.titleField)
-                        .textFieldStyle(.plain)
-                        .font(.title3.bold())
-                    Text("Last modified \(viewModel.getDate()) at \(viewModel.getTime())")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+        GeometryReader { geo in
+            VStack (alignment: .leading) {
+                HStack (alignment: .top) {
+                    VStack (alignment: .leading, spacing: 2) {
+                        TextField("", text: $viewModel.titleField)
+                            .textFieldStyle(.plain)
+                            .font(.title3.bold())
+                        
+                        Text("Last modified \(viewModel.getDate()) at \(viewModel.getTime())")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    
+                    Spacer()
+                    
+                    Button {
+                        viewModel.updatePinned()
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark.square.fill")
+                            .resizable()
+                            .frame(width: 20, height: 20)
+                            .symbolRenderingMode(.hierarchical)
+                    }
+                    
+                    .buttonStyle(.plain)
+                }
+                
+                ZStack (alignment: .topLeading) {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill((Color(name: viewModel.noteColor).opacity(0.6)))
+                    
+                    if (viewModel.isEditing) {
+                        editingView()
+                    } else {
+                        presentationView()
+                            .onTapGesture {
+                                withAnimation {
+                                    viewModel.isEditing.toggle()
+                                }
+                            }
+                    }
                 }
                 
                 Spacer()
-                
-                Button {
-                    viewModel.updatePinned()
-                    dismiss()
-                } label: {
-                    Image(systemName: "xmark.square.fill")
-                        .resizable()
-                        .frame(width: 20, height: 20)
-                        .symbolRenderingMode(.hierarchical)
-                }
-                
-                .buttonStyle(.plain)
             }
             
-            TextEditor(text: $viewModel.contentField)
-                .padding()
-                .font(.body)
-                .textEditorStyle(.plain)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .foregroundStyle(Color(name: viewModel.noteColor).opacity(0.8))
-                )
-            
-            Spacer()
+            .padding([.bottom, .horizontal])
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(name: viewModel.noteColor).opacity(0.8).gradient)
         }
         
-        .padding([.bottom, .horizontal])
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(name: viewModel.noteColor).opacity(0.6))
         .task {
             viewModel.setNote(noteItem)
         }
@@ -78,9 +89,27 @@ struct StickyView: View {
             }
         }
     }
+    
+    func editingView() -> some View {
+        TextEditor(text: $viewModel.contentField)
+            .padding()
+            .font(.body)
+            .textEditorStyle(.plain)
+    }
+    
+    func presentationView() -> some View {
+        Markdown(markdownText: $viewModel.contentField, viewModel: viewModel)
+            .padding()
+            .id(viewModel.contentField)
+    }
 }
 
 #Preview ("StickyView") {
+    StickyView(noteItem: .placeholder2)
+        .frame(minWidth: 250, idealWidth: 300, minHeight: 200, idealHeight: 300)
+}
+
+#Preview ("StickyView Populated") {
     StickyView(noteItem: .placeholder)
         .frame(minWidth: 250, idealWidth: 300, minHeight: 200, idealHeight: 300)
 }
