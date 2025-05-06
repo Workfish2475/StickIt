@@ -17,7 +17,7 @@ struct NoteView: View {
     @State private var scrollOffset: CGFloat = 0
     
     @State var text = ""
-    @State var selection = NSRange(location: 0, length: 0)
+    @State private var selection: TextSelection? = nil
     
     @FocusState private var hasFocus
     
@@ -127,7 +127,7 @@ struct NoteView: View {
     
     func textEditingView() -> some View {
         ScrollViewReader { proxy in
-            TextEditor(text: $viewModel.contentField)
+            TextEditor(text: $viewModel.contentField, selection: $selection)
                 .focused($hasFocus)
                 .id("textEditor")
                 .tint(.white)
@@ -146,11 +146,11 @@ struct NoteView: View {
                     viewModel.updateContent()
                 }
                 
-                .onChange(of: viewModel.contentField) {
+                .onChange(of: viewModel.contentField.last) {
                     proxy.scrollTo("textEditor", anchor: .bottom)
+                    insertAtCusor("Test")
                 }
         }
-        
     }
     
     private func titleBar() -> some View {
@@ -158,10 +158,9 @@ struct NoteView: View {
             Button {
                 dismiss()
             } label: {
-                Image(systemName: "x.circle.fill")
-                    .symbolRenderingMode(.multicolor)
-                    .imageScale(.large)
+                Label("Back", systemImage: "chevron.left")
                     .fontWeight(.bold)
+                    .foregroundColor(.white)
             }
             
             Spacer()
@@ -181,7 +180,7 @@ struct NoteView: View {
                         .padding(.vertical, 8)
                         .background(Color(name: viewModel.noteColor))
                         .foregroundColor(.white)
-                        .clipShape(Capsule())
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
                 
                 .transition(.move(edge: .trailing).combined(with: .opacity))
@@ -218,6 +217,7 @@ struct NoteView: View {
                 } label: {
                     Image(systemName: "ellipsis.circle")
                         .imageScale(.large)
+                        .foregroundColor(.white)
                 }
             }
         }
@@ -229,69 +229,69 @@ struct NoteView: View {
     }
     
     private var keyboardToolbar: some ToolbarContent {
-            ToolbarItemGroup(placement: .keyboard) {
-                HStack {
-                    Button {
-                        viewModel.isShowingHeader.toggle()
-                    } label: {
-                        Image(systemName: "h.square.fill")
-                            .fontWeight(.bold)
-                            .frame(width: 50, height: 35)
-                            .foregroundStyle(.white)
-                            .background(Capsule().fill(Color(name: viewModel.noteColor)))
-                    }
-                    .popover(isPresented: $viewModel.isShowingHeader) {
-                        HStack {
-                            ForEach(1..<5) { num in
-                                Button {
-                                    let addition = String(repeating: "#", count: num)
-                                    viewModel.contentField += "\n\(addition) "
-                                    viewModel.isShowingHeader.toggle()
-                                } label: {
-                                    Image(systemName: "\(num).square.fill")
-                                        .fontWeight(.bold)
-                                }
+        ToolbarItemGroup(placement: .keyboard) {
+            HStack {
+                Button {
+                    viewModel.isShowingHeader.toggle()
+                } label: {
+                    Image(systemName: "h.square.fill")
+                        .fontWeight(.bold)
+                        .frame(width: 50, height: 35)
+                        .foregroundStyle(.white)
+                        .background(Capsule().fill(Color(name: viewModel.noteColor)))
+                }
+                .popover(isPresented: $viewModel.isShowingHeader) {
+                    HStack {
+                        ForEach(1..<5) { num in
+                            Button {
+                                let addition = String(repeating: "#", count: num)
+                                viewModel.contentField += "\n\(addition) "
+                                viewModel.isShowingHeader.toggle()
+                            } label: {
+                                Image(systemName: "\(num).square.fill")
+                                    .fontWeight(.bold)
                             }
                         }
-                        .padding()
-                        .presentationCompactAdaptation(.popover)
                     }
-                    
-                    Button { viewModel.contentField += "\n[ ]( )" } label: {
-                        Image(systemName: "link")
-                            .fontWeight(.bold)
-                            .frame(width: 50, height: 35)
-                            .foregroundStyle(.white)
-                            .background(Capsule().fill(Color(name: viewModel.noteColor)))
-                    }
+                    .padding()
+                    .presentationCompactAdaptation(.popover)
+                }
+                
+                Button { viewModel.contentField += "\n[ ]( )" } label: {
+                    Image(systemName: "link")
+                        .fontWeight(.bold)
+                        .frame(width: 50, height: 35)
+                        .foregroundStyle(.white)
+                        .background(Capsule().fill(Color(name: viewModel.noteColor)))
+                }
 
-                    Button { viewModel.contentField += "\n```\n\n```" } label: {
-                        Image(systemName: "hammer.fill").fontWeight(.bold)
-                            .fontWeight(.bold)
-                            .frame(width: 50, height: 35)
-                            .foregroundStyle(.white)
-                            .background(Capsule().fill(Color(name: viewModel.noteColor)))
-                    }
+                Button { viewModel.contentField += "\n```\n\n```" } label: {
+                    Image(systemName: "hammer.fill").fontWeight(.bold)
+                        .fontWeight(.bold)
+                        .frame(width: 50, height: 35)
+                        .foregroundStyle(.white)
+                        .background(Capsule().fill(Color(name: viewModel.noteColor)))
+                }
 
-                    Button { viewModel.contentField += "\n[ ] " } label: {
-                        Image(systemName: "checkmark.square.fill")
-                            .fontWeight(.bold)
-                            .frame(width: 50, height: 35)
-                            .foregroundStyle(.white)
-                            .background(Capsule().fill(Color(name: viewModel.noteColor)))
-                    }
-                    
-                    Spacer()
-                    
-                    Button { dismissKeyboard() } label: {
-                        Image(systemName: "arrow.down")
-                            .symbolRenderingMode(.hierarchical)
-                            .foregroundStyle(.gray)
-                            .fontWeight(.bold)
-                    }
+                Button { viewModel.contentField += "\n[ ] " } label: {
+                    Image(systemName: "checkmark.square.fill")
+                        .fontWeight(.bold)
+                        .frame(width: 50, height: 35)
+                        .foregroundStyle(.white)
+                        .background(Capsule().fill(Color(name: viewModel.noteColor)))
+                }
+                
+                Spacer()
+                
+                Button { dismissKeyboard() } label: {
+                    Image(systemName: "arrow.down")
+                        .symbolRenderingMode(.hierarchical)
+                        .foregroundStyle(.gray)
+                        .fontWeight(.bold)
                 }
             }
         }
+    }
     
     func markdownPresentation() -> some View {
         Markdown(markdownText: $viewModel.contentField, viewModel: viewModel)
@@ -304,6 +304,14 @@ struct NoteView: View {
                     .fill(Color(Color(name: viewModel.noteColor).opacity(0.8)))
             )
             .padding()
+    }
+    
+    //TODO: Needs to be finished.
+    private func insertAtCusor(_ text: String) {
+        guard let selection = selection else {
+            viewModel.contentField += text
+            return
+        }
     }
 }
 

@@ -27,26 +27,28 @@ enum Appearance: String, CaseIterable, Identifiable {
 }
 
 struct AppearancePicker: View {
-    
     @AppStorage("appearance") var appearance: Appearance = .system
     @Environment(\.colorScheme) private var scheme
-    
+
     var body: some View {
-        NavigationStack {
-            List {
-                Picker("", selection: $appearance) {
-                    ForEach(Appearance.allCases, id: \.self) { option in
-                        Text(option.rawValue.capitalized)
-                            .tag(option)
+        List {
+            ForEach(Appearance.allCases, id: \.self) { option in
+                HStack {
+                    Text(option.rawValue.capitalized)
+                    Spacer()
+                    if option == appearance {
+                        Image(systemName: "checkmark")
+                            .foregroundColor(.accentColor)
                     }
                 }
-                
-                .pickerStyle(.inline)
+                .contentShape(Rectangle()) // Makes the whole row tappable
+                .onTapGesture {
+                    appearance = option
+                }
             }
-            
-            .navigationTitle("Theme")
         }
-        
+        .navigationTitle("Theme")
+        .listStyle(.insetGrouped)
         .preferredColorScheme(appearance.colorScheme == .none ? scheme : appearance.colorScheme)
     }
 }

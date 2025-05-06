@@ -26,7 +26,7 @@ struct Markdown: View {
                 let line = parseLine(markdownLines[index])
                 
                 switch line {
-                    case .header(let level):
+                    case .header(_):
                         headerView(markdownLines[index])
                     case .checkbox:
                         checkboxView(markdownLines[index], index)
@@ -100,12 +100,10 @@ struct Markdown: View {
                     Link(destination: URL(string: String(link))!) {
                         Label(title, systemImage: "safari")
                             .padding(10)
-                            .underline()
                             .background(
                                 RoundedRectangle(cornerRadius: 10)
                                     .fill(Color.black.opacity(0.2))
                             )
-                            .padding(.vertical, 10)
                             .fontWeight(.bold)
                     }
                 )
@@ -128,6 +126,10 @@ struct Markdown: View {
                         .onTapGesture {
                             var newLine = line
                             newLine.replaceSubrange(openBracket...closeBracket, with: item == "x" ? "[ ]" : "[x]")
+                            
+//                            let generator = UIImpactFeedbackGenerator(style: .light)
+//                            generator.impactOccurred()
+                            
                             updateLine(newLine, index)
                         }
                     

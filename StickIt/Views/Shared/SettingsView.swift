@@ -28,12 +28,17 @@ struct SettingsView: View {
                 }
                 
                 Section("Help") {
-                    Label("Contact", systemImage: "envelope")
-                        .onTapGesture {
-                            setupMail()
-                        }
+                    Button {
+                        setupMail()
+                    } label: {
+                        Label("Contact", systemImage: "envelope")
+                    }
                     
-                    Label("Website", systemImage: "safari")
+                    Button {
+                        setupWebsite()
+                    } label: {
+                        Label("Website", systemImage: "safari")
+                    }
                 }
             }
             .navigationTitle("Settings")
@@ -53,14 +58,21 @@ struct SettingsView: View {
         .preferredColorScheme(appearance.colorScheme)
     }
     
-    func setupMail() -> Void {
+    private func setupMail() -> Void {
         let mailURL = URL(string: "mailto:alexander2475@icloud.com")!
         if UIApplication.shared.canOpenURL(mailURL) {
             UIApplication.shared.open(mailURL, options: [:], completionHandler: nil)
          }
     }
     
-    func openSubPage() -> Void {
+    private func setupWebsite() -> Void {
+        let websiteURL = URL(string: "https://workfish2475.github.io/stickit")!
+        if UIApplication.shared.canOpenURL(websiteURL) {
+            UIApplication.shared.open(websiteURL)
+        }
+    }
+    
+    private func openSubPage() -> Void {
         dismiss()
     }
 }
@@ -70,28 +82,27 @@ struct WhatsNew: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                item("iCloud Sync", "Sync your notes automatically across devices.", "icloud.fill")
-                item("Home Screen Widgets", "Access notes quickly from your Home Screen.", "square.grid.2x2.fill")
-                item("Pinnable Notes", "Keep important notes at the top of your list.", "pin.fill")
-                item("Customizable Notes", "Style your notes with fonts and colors.", "paintpalette.fill")
-            }
+        VStack(spacing: 15) {
+            item("iCloud Sync", "Sync your notes automatically across devices.", "icloud.fill")
+            item("Home Screen Widgets", "Access notes quickly from your Home Screen.", "square.grid.2x2.fill")
+            item("Pinnable Notes", "Keep important notes at the top of your list.", "pin.fill")
+            item("Customizable Notes", "Style your notes with fonts and colors.", "paintpalette.fill")
             
-            .padding(.top, 24)
+            Spacer()
             
             Button {
                 dismiss()
             } label: {
-                Label("Done", systemImage: "checkmark")
-                    .fontWeight(.bold)
+                Text("Dismiss")
+                    .fontWeight(.medium)
                     .frame(maxWidth: .infinity)
             }
             
             .buttonStyle(.borderedProminent)
-            .padding(.top, 32)
+            .padding(.vertical, 32)
         }
         
+        .padding(.top, 24)
         .padding(.horizontal)
         .background(Color(uiColor: .secondarySystemBackground))
         .navigationTitle("What's New")

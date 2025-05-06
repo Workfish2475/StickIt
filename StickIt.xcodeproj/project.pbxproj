@@ -98,7 +98,6 @@
 		1136F58E2DAB3E8800B18344 /* Exceptions for "StickIt" folder in "StickIt-Mac" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Misc/Appearance.swift,
 				Misc/Colors.swift,
 				Misc/FlowLayout.swift,
 				Misc/Markdown.swift,

@@ -8,6 +8,8 @@
 import SwiftUI
 import SwiftData
 
+
+// TODO: This looks really bad. Simple, but in the bad way.
 struct ContentView: View {
 
     @Query private var notes: [Note]
@@ -52,10 +54,12 @@ struct ContentView: View {
                     .id(selectedNote.id)
             } else {
                 Text("Select a note to view")
+                    .onTapGesture {
+                        addingNote.toggle()
+                    }
             }
         }
         
-        .navigationTitle("StickIt")
         .onChange(of: selectedNote) {
             addingNote = false
         }

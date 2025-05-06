@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-//TODO: Maybe implement something with a focusstate and then trigger save on focus state change
 struct NotesView: View {
     
     var noteItem: Note? = nil
@@ -16,103 +15,176 @@ struct NotesView: View {
     @Environment(\.modelContext) private var context
     @State private var viewModel: NoteViewModel = NoteViewModel()
     
+    @Namespace private var animation
+    
+    init(noteItem: Note? = nil) {
+        self.noteItem = noteItem
+        let viewModel = NoteViewModel()
+        if let noteItem = noteItem {
+            viewModel.setNote(noteItem)
+        }
+        _viewModel = State(initialValue: viewModel)
+    }
+    
+    private var noteColor: Color {
+        Color(name: viewModel.noteColor)
+    }
+    
     var body: some View {
-        VStack (spacing: 0) {
-            HStack {
-                TextField ("New Note", text: $viewModel.titleField)
-                    .font(.title.bold())
-                    .textFieldStyle(.plain)
-                    .onSubmit {
-                        viewModel.updateTitle()
+        GeometryReader { geo in
+            VStack (spacing: 0) {
+                HStack {
+                    TextField ("New Note", text: $viewModel.titleField)
+                        .font(.title.bold())
+                        .textFieldStyle(.plain)
+                        .foregroundStyle(.white)
+                        .onSubmit {
+                            viewModel.updateTitle()
+                        }
+                }
+                
+                .padding([.top, .horizontal])
+                
+                Text("Last Modified \(viewModel.getDate()) at \(viewModel.getTime())")
+                    .font(.footnote.bold())
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal)
+                
+                if viewModel.isEditing {
+                    HStack(spacing: 0) {
+                        textEditingView()
+                            .frame(maxWidth: .infinity)
+                        
+                        editingTools()
+                            .frame(width: 60)
+                            .frame(minWidth: 30)
                     }
+                } else {
+                    HStack (spacing: 0) {
+                        markdownView()
+                            .onTapGesture {
+                                withAnimation {
+                                    viewModel.isEditing.toggle()
+                                }
+                            }
+                        
+                        previewTools()
+                            .frame(width: 60)
+                            .frame(minWidth: 30)
+                    }
+                }
+
+                Spacer()
             }
             
-            .padding([.top, .horizontal])
-            
-            Text("Last modified \(viewModel.getDate()) at \(viewModel.getTime())")
-                .font(.footnote.bold())
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal)
-            
-            TextEditor(text: $viewModel.contentField)
-                .padding()
-                .font(.body)
-                .textEditorStyle(.plain)
-                .submitLabel(.done) 
-                .multilineTextAlignment(.leading)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color(Color(name: viewModel.noteColor).opacity(0.8)))
-                )
-                .padding()
-                .onSubmit {
-                    viewModel.updateContent()
-                }
-            
-            Spacer()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         
-        .safeAreaInset(edge: .bottom) {
-            toolView()
-        }
-        
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(name: viewModel.noteColor).opacity(0.6))
+        .background(noteColor.opacity(0.6))
         .toolbar {
-            ToolbarItem {
-                Button {
-                    viewModel.updatePinned()
-                    openWindow(value: viewModel.noteItem!)
-                } label: {
-                    Label("Pin", systemImage: "pin.fill")
-                        .foregroundStyle(viewModel.isPinned ? .red : .gray)
-                        .labelStyle(.titleAndIcon)
+            ToolbarItemGroup(placement: .automatic) {
+                Spacer()
+                
+                if (viewModel.isEditing) {
+                    Text("Done")
+                        .fontWeight(.bold)
+                        .padding()
+                        .background(noteColor)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .onTapGesture {
+                            withAnimation {
+                                viewModel.isEditing.toggle()
+                            }
+                        }
                 }
-                
-                
-                .disabled(viewModel.noteItem == nil)
+            }
+        }
+    }
+    
+    func previewTools() -> some View {
+        VStack (spacing: 10) {
+            Button {
+                viewModel.updatePinned()
+                openWindow(value: viewModel.noteItem!)
+            } label: {
+                Image(systemName: "pin.fill")
+                    .font(.headline)
+                    .foregroundStyle(Color.white.opacity(viewModel.noteItem == nil ? 0.5 : 0.8))
+                    .frame(width: 25, height: 25)
+                    .background(Color.white.opacity(0.2))
+                    .clipShape(Circle())
             }
             
-            ToolbarItem {
-                Picker("", selection: $viewModel.noteColor) {
-                    ForEach(Color.namedColors, id: \.name) { namedColor in
-                        Text(namedColor.name.capitalized)
-                            .tag(namedColor.name)
-                    }
+            .disabled(viewModel.noteItem == nil)
+            
+            Divider()
+            
+            Picker("", selection: $viewModel.noteColor) {
+                ForEach(Color.namedColors, id: \.name) { namedColor in
+                    Text(namedColor.name.capitalized)
+                        .tag(namedColor.name)
                 }
-                .pickerStyle(.menu)
-                .labelStyle(.iconOnly)
             }
             
-            ToolbarItem {
-                Button {
-                    viewModel.deleteNote(context)
-                } label: {
-                    Label("Delete", systemImage: "trash.fill")
-                        .labelStyle(.titleAndIcon)
-                        .foregroundStyle(viewModel.noteItem == nil ? .gray : Color.red)
-                }
-                
-                .disabled(viewModel.noteItem == nil)
+            .labelsHidden()
+            .pickerStyle(.menu)
+            .frame(width: 30, height: 30)
+            .contentShape(Circle())
+            .overlay {
+                Circle()
+                    .stroke(Color.white.opacity(0.3), lineWidth: 1)
+            }
+            .background {
+                Circle()
+                    .fill(Color.white.opacity(0.2))
+            }
+          
+            Divider()
+            
+            Button {
+                viewModel.deleteNote(context)
+            } label: {
+                Image(systemName: "trash.fill")
+                    .font(.headline)
+                    .foregroundStyle(Color.red)
+                    .frame(width: 25, height: 25)
+                    .background(Color.white.opacity(0.2))
+                    .clipShape(Circle())
             }
             
-            ToolbarItem {
-                Button {
-                    viewModel.saveNote(context)
-                } label: {
-                    Label("Save", systemImage: "checkmark.circle.fill")
-                        .labelStyle(.titleAndIcon)
-                        .foregroundStyle(Color.green)
-                }
+            .disabled(viewModel.noteItem == nil)
+            
+            Divider()
+            
+            Button {
+                viewModel.saveNote(context)
+            } label: {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.headline)
+                    .foregroundStyle(Color.green)
+                    .frame(width: 25, height: 25)
+                    .background(Color.white.opacity(0.2))
+                    .clipShape(Circle())
             }
         }
         
-        .task {
-            if let noteItem = noteItem {
-                viewModel.setNote(noteItem)
-            }
-        }
+        .matchedGeometryEffect(id: "toolbar", in: animation)
+        
+        .tint(.white)
+        .buttonStyle(.plain)
+        .padding()
+        
+        .background (
+            noteColor.opacity(0.8)
+        )
+        
+        .clipShape(.rect(
+            topLeadingRadius: 10,
+            bottomLeadingRadius: 10,
+            bottomTrailingRadius: 0,
+            topTrailingRadius: 0
+        ))
     }
     
     func getTimeString() -> String {
@@ -125,32 +197,58 @@ struct NotesView: View {
         }
     }
     
-    func toolView() -> some View {
-        HStack {
-            labelItem("Header", "h.square.fill")
-            
-            Divider()
-                .frame(maxHeight: 30)
-            
-            labelItem("Link", "h.square.fill")
-            
-            Divider()
-                .frame(maxHeight: 30)
-            
-            labelItem("Code", "h.square.fill")
-            
-            Divider()
-                .frame(maxHeight: 30)
-            
-            labelItem("Checkmark", "h.square.fill")
+    func editingTools() -> some View {
+        VStack {
+            Group {
+                Image(systemName: "h.square.fill")
+                    .font(.headline)
+                    .foregroundStyle(Color.white.opacity(0.8))
+                    .frame(width: 25, height: 25)
+                    .background(Color.white.opacity(0.1))
+                    .clipShape(Circle())
+                
+                Divider()
+                
+                Image(systemName: "h.square.fill")
+                    .font(.headline)
+                    .foregroundStyle(Color.white.opacity(0.8))
+                    .frame(width: 25, height: 25)
+                    .background(Color.white.opacity(0.1))
+                    .clipShape(Circle())
+                
+                Divider()
+                
+                Image(systemName: "h.square.fill")
+                    .font(.headline)
+                    .foregroundStyle(Color.white.opacity(0.8))
+                    .frame(width: 25, height: 25)
+                    .background(Color.white.opacity(0.1))
+                    .clipShape(Circle())
+                
+                Divider()
+                
+                Image(systemName: "h.square.fill")
+                    .font(.headline)
+                    .foregroundStyle(Color.white.opacity(0.8))
+                    .frame(width: 25, height: 25)
+                    .background(Color.white.opacity(0.1))
+                    .clipShape(Circle())
+            }
         }
         
+        .matchedGeometryEffect(id: "toolbar", in: animation)
         .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color(name: viewModel.noteColor).opacity(0.8))
+        
+        .background (
+            noteColor.opacity(0.8)
         )
-        .padding()
+        
+        .clipShape(.rect(
+            topLeadingRadius: 10,
+            bottomLeadingRadius: 10,
+            bottomTrailingRadius: 0,
+            topTrailingRadius: 0
+        ))
     }
     
     func labelItem(_ title: String,_ image: String) -> some View {
@@ -160,6 +258,38 @@ struct NotesView: View {
             Text("\(title)")
                 .font(.subheadline)
         }
+    }
+    
+    func textEditingView() -> some View {
+        TextEditor(text: $viewModel.contentField)
+            .padding()
+            .font(.body)
+            .textEditorStyle(.plain)
+            .submitLabel(.done)
+            .foregroundStyle(.white)
+            .multilineTextAlignment(.leading)
+            .scrollIndicators(.hidden)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color(Color(name: viewModel.noteColor).opacity(0.8)))
+            )
+            .padding()
+            .onSubmit {
+                viewModel.updateContent()
+            }
+    }
+    
+    func markdownView() -> some View {
+        Markdown(markdownText: $viewModel.contentField, viewModel: viewModel)
+            .frame(maxWidth: .infinity, alignment: .topLeading)
+            .padding()
+            .multilineTextAlignment(.leading)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color(Color(name: viewModel.noteColor).opacity(0.8)))
+            )
+            .padding()
+            .foregroundStyle(.white)
     }
 }
 
