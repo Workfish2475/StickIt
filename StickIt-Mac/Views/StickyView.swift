@@ -13,10 +13,17 @@ struct StickyView: View {
     
     var noteItem: Note
     
-    @State private var viewModel: NoteViewModel = NoteViewModel()
+    @State private var viewModel: NoteViewModel
     
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
+    
+    init(noteItem: Note) {
+        self.noteItem = noteItem
+        let viewModel = NoteViewModel()
+        viewModel.setNote(noteItem)
+        _viewModel = State(initialValue: viewModel)
+    }
     
     var body: some View {
         GeometryReader { geo in
@@ -71,10 +78,6 @@ struct StickyView: View {
             .background(Color(name: viewModel.noteColor).opacity(0.8).gradient)
         }
         
-        .task {
-            viewModel.setNote(noteItem)
-        }
-        
         .onAppear {
             DispatchQueue.main.async {
                 if let window = NSApplication.shared.windows.first(where: { $0.title == noteItem.name }) {
@@ -100,7 +103,7 @@ struct StickyView: View {
     func presentationView() -> some View {
         Markdown(markdownText: $viewModel.contentField, viewModel: viewModel)
             .padding()
-            .id(viewModel.contentField)
+//            .id(viewModel.contentField)
     }
 }
 

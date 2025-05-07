@@ -52,27 +52,15 @@ struct NotesView: View {
                     .padding(.horizontal)
                 
                 if viewModel.isEditing {
-                    HStack(spacing: 0) {
-                        textEditingView()
-                            .frame(maxWidth: .infinity)
-                        
-                        editingTools()
-                            .frame(width: 60)
-                            .frame(minWidth: 30)
-                    }
+                    textEditingView()
+                        .frame(maxWidth: .infinity)
                 } else {
-                    HStack (spacing: 0) {
-                        markdownView()
-                            .onTapGesture {
-                                withAnimation {
-                                    viewModel.isEditing.toggle()
-                                }
+                    markdownView()
+                        .onTapGesture {
+                            withAnimation {
+                                viewModel.isEditing.toggle()
                             }
-                        
-                        previewTools()
-                            .frame(width: 60)
-                            .frame(minWidth: 30)
-                    }
+                        }
                 }
 
                 Spacer()
@@ -83,43 +71,22 @@ struct NotesView: View {
         
         .background(noteColor.opacity(0.6))
         .toolbar {
-            ToolbarItemGroup(placement: .automatic) {
+            ToolbarItem (placement: .navigation) {
+                editingTools()
+            }
+            
+            ToolbarItem {
                 Spacer()
-                
-                if (viewModel.isEditing) {
-                    Text("Done")
-                        .fontWeight(.bold)
-                        .padding()
-                        .background(noteColor)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .onTapGesture {
-                            withAnimation {
-                                viewModel.isEditing.toggle()
-                            }
-                        }
-                }
+            }
+            
+            ToolbarItem(placement: .primaryAction) {
+                previewTools()
             }
         }
     }
     
     func previewTools() -> some View {
-        VStack (spacing: 10) {
-            Button {
-                viewModel.updatePinned()
-                openWindow(value: viewModel.noteItem!)
-            } label: {
-                Image(systemName: "pin.fill")
-                    .font(.headline)
-                    .foregroundStyle(Color.white.opacity(viewModel.noteItem == nil ? 0.5 : 0.8))
-                    .frame(width: 25, height: 25)
-                    .background(Color.white.opacity(0.2))
-                    .clipShape(Circle())
-            }
-            
-            .disabled(viewModel.noteItem == nil)
-            
-            Divider()
-            
+        HStack {
             Picker("", selection: $viewModel.noteColor) {
                 ForEach(Color.namedColors, id: \.name) { namedColor in
                     Text(namedColor.name.capitalized)
@@ -127,64 +94,65 @@ struct NotesView: View {
                 }
             }
             
-            .labelsHidden()
-            .pickerStyle(.menu)
-            .frame(width: 30, height: 30)
-            .contentShape(Circle())
-            .overlay {
-                Circle()
-                    .stroke(Color.white.opacity(0.3), lineWidth: 1)
+            
+            Button {
+                viewModel.updatePinned()
+                openWindow(value: viewModel.noteItem!)
+            } label: {
+                Image(systemName: "pin.fill")
+                    .font(.headline)
             }
-            .background {
-                Circle()
-                    .fill(Color.white.opacity(0.2))
-            }
-          
-            Divider()
+            
+            .disabled(viewModel.noteItem == nil)
             
             Button {
                 viewModel.deleteNote(context)
             } label: {
                 Image(systemName: "trash.fill")
                     .font(.headline)
-                    .foregroundStyle(Color.red)
-                    .frame(width: 25, height: 25)
-                    .background(Color.white.opacity(0.2))
-                    .clipShape(Circle())
             }
             
             .disabled(viewModel.noteItem == nil)
-            
-            Divider()
             
             Button {
                 viewModel.saveNote(context)
             } label: {
                 Image(systemName: "checkmark.circle.fill")
                     .font(.headline)
-                    .foregroundStyle(Color.green)
-                    .frame(width: 25, height: 25)
-                    .background(Color.white.opacity(0.2))
-                    .clipShape(Circle())
             }
         }
-        
-        .matchedGeometryEffect(id: "toolbar", in: animation)
-        
-        .tint(.white)
-        .buttonStyle(.plain)
-        .padding()
-        
-        .background (
-            noteColor.opacity(0.8)
-        )
-        
-        .clipShape(.rect(
-            topLeadingRadius: 10,
-            bottomLeadingRadius: 10,
-            bottomTrailingRadius: 0,
-            topTrailingRadius: 0
-        ))
+    }
+    
+    func editingTools() -> some View {
+        HStack {
+            Button {
+                
+            } label: {
+                Image(systemName: "h.square.fill")
+                    .font(.headline)
+            }
+            
+            Button {
+                
+            } label: {
+                Image(systemName: "hammer.fill")
+                    .font(.headline)
+            }
+            
+            Button {
+                
+            } label: {
+                Image(systemName: "link")
+                    .font(.headline)
+            }
+            
+            Button {
+                
+            } label: {
+                Image(systemName: "checkmark.square.fill")
+                    .font(.headline)
+            }
+        }
     }
     
     func getTimeString() -> String {
@@ -194,69 +162,6 @@ struct NotesView: View {
             return "\(viewModel.lastModified.formatted(.dateTime.hour().minute()))"
         } else {
             return "\(viewModel.lastModified.formatted(.dateTime.day().month().year()))"
-        }
-    }
-    
-    func editingTools() -> some View {
-        VStack {
-            Group {
-                Image(systemName: "h.square.fill")
-                    .font(.headline)
-                    .foregroundStyle(Color.white.opacity(0.8))
-                    .frame(width: 25, height: 25)
-                    .background(Color.white.opacity(0.1))
-                    .clipShape(Circle())
-                
-                Divider()
-                
-                Image(systemName: "h.square.fill")
-                    .font(.headline)
-                    .foregroundStyle(Color.white.opacity(0.8))
-                    .frame(width: 25, height: 25)
-                    .background(Color.white.opacity(0.1))
-                    .clipShape(Circle())
-                
-                Divider()
-                
-                Image(systemName: "h.square.fill")
-                    .font(.headline)
-                    .foregroundStyle(Color.white.opacity(0.8))
-                    .frame(width: 25, height: 25)
-                    .background(Color.white.opacity(0.1))
-                    .clipShape(Circle())
-                
-                Divider()
-                
-                Image(systemName: "h.square.fill")
-                    .font(.headline)
-                    .foregroundStyle(Color.white.opacity(0.8))
-                    .frame(width: 25, height: 25)
-                    .background(Color.white.opacity(0.1))
-                    .clipShape(Circle())
-            }
-        }
-        
-        .matchedGeometryEffect(id: "toolbar", in: animation)
-        .padding()
-        
-        .background (
-            noteColor.opacity(0.8)
-        )
-        
-        .clipShape(.rect(
-            topLeadingRadius: 10,
-            bottomLeadingRadius: 10,
-            bottomTrailingRadius: 0,
-            topTrailingRadius: 0
-        ))
-    }
-    
-    func labelItem(_ title: String,_ image: String) -> some View {
-        VStack {
-            Image(systemName: "\(image)")
-                .imageScale(.large)
-            Text("\(title)")
-                .font(.subheadline)
         }
     }
     
@@ -296,4 +201,8 @@ struct NotesView: View {
 #Preview {
     NotesView(noteItem: .placeholder)
         .frame(minWidth: 400, idealWidth: 800, minHeight: 400, idealHeight: 800)
+}
+
+#Preview {
+    NotesView(noteItem: .placeholder).editingTools()
 }

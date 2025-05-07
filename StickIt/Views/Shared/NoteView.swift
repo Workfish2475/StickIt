@@ -23,6 +23,15 @@ struct NoteView: View {
     
     @State private var viewModel: NoteViewModel = NoteViewModel()
     
+    init(noteItem: Note? = nil) {
+        self.noteItem = noteItem
+        let viewModel = NoteViewModel()
+        if let noteItem = noteItem {
+            viewModel.setNote(noteItem)
+        }
+        _viewModel = State(initialValue: viewModel)
+    }
+    
     private var backgroundMaterial: some View {
         Group {
             if scrollOffset < -10 {
@@ -107,12 +116,6 @@ struct NoteView: View {
                     }
                 
                 keyboardToolbar
-            }
-        }
-
-        .task {
-            if let note = noteItem {
-                viewModel.setNote(note)
             }
         }
         

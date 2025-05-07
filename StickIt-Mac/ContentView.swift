@@ -60,6 +60,7 @@ struct ContentView: View {
             }
         }
         
+        .toolbar(removing: .title)
         .onChange(of: selectedNote) {
             addingNote = false
         }
