@@ -21,12 +21,12 @@ struct StickIt_MacApp: App {
             if let unwrappedNote = note {
                 StickyView(noteItem: unwrappedNote)
                     .modelContainer(for: [Note.self])
-                    .frame(minWidth: 250, minHeight: 200)
+                    .frame(minWidth: 275, minHeight: 250)
                     .navigationTitle(unwrappedNote.name)
             }
         }
         
-        .defaultSize(CGSize(width: 240, height: 250))
+        .defaultSize(CGSize(width: 250, height: 225))
         .windowStyle(.hiddenTitleBar)
         .windowLevel(.floating)
     }

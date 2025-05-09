@@ -57,6 +57,8 @@ class NoteViewModel {
             self.noteItem = newNote
         }
 
+        self.isEditing = false
+        
         do {
             try context.save()
         } catch {

@@ -18,6 +18,9 @@ struct StickyView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
     
+    // MARK: - Trying to get it to fetch on focus of window
+    @Environment(\.scenePhase) private var schene
+    
     init(noteItem: Note) {
         self.noteItem = noteItem
         let viewModel = NoteViewModel()
@@ -25,63 +28,75 @@ struct StickyView: View {
         _viewModel = State(initialValue: viewModel)
     }
     
+    private var noteColor: Color {
+        return Color(name: viewModel.noteColor)
+    }
+    
     var body: some View {
         GeometryReader { geo in
-            VStack (alignment: .leading) {
-                HStack (alignment: .top) {
-                    VStack (alignment: .leading, spacing: 2) {
-                        TextField("", text: $viewModel.titleField)
-                            .textFieldStyle(.plain)
-                            .font(.title3.bold())
-                        
-                        Text("Last modified \(viewModel.getDate()) at \(viewModel.getTime())")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                    
-                    Spacer()
-                    
-                    Button {
-                        viewModel.updatePinned()
-                        dismiss()
-                    } label: {
-                        Image(systemName: "xmark.square.fill")
-                            .resizable()
-                            .frame(width: 20, height: 20)
-                            .symbolRenderingMode(.hierarchical)
-                    }
-                    
-                    .buttonStyle(.plain)
+            VStack (spacing: 5) {
+                HStack {
+                    titleView
+                    windowTools
                 }
                 
-                ZStack (alignment: .topLeading) {
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill((Color(name: viewModel.noteColor).opacity(0.6)))
-                    
-                    if (viewModel.isEditing) {
-                        editingView()
-                    } else {
-                        presentationView()
-                            .onTapGesture {
-                                withAnimation {
-                                    viewModel.isEditing.toggle()
-                                }
+                ScrollView (showsIndicators: false) {
+                    contentArea()
+                        .onTapGesture {
+                            withAnimation {
+                                viewModel.isEditing.toggle()
                             }
-                    }
+                        }
                 }
                 
-                Spacer()
+                .padding()
+                .background(noteColor)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .padding()
             }
             
-            .padding([.bottom, .horizontal])
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(name: viewModel.noteColor).opacity(0.8).gradient)
+            .foregroundStyle(.white)
+            .background(
+                noteColor.opacity(0.8)
+            )
         }
+        
+        
+        // MARK: - Testing needed
+        .onChange(of: schene) {
+            do {
+                
+                var fetchDesc = FetchDescriptor<Note>()
+                fetchDesc.predicate = #Predicate<Note>{
+                    $0.id == noteItem.id
+                }
+                
+                let cloudNote = try context.fetch(fetchDesc).first
+                
+                guard let cloudNote = cloudNote else {
+                    return
+                }
+                
+                if cloudNote.lastModified == noteItem.lastModified {
+                    return
+                }
+                
+                viewModel.setNote(cloudNote)
+                
+            } catch {
+                print("error: \(error)")
+            }
+        }
+        
+        .onChange(of: context) {
+            try? context.save()
+        }
+
         
         .onAppear {
             DispatchQueue.main.async {
                 if let window = NSApplication.shared.windows.first(where: { $0.title == noteItem.name }) {
-                    window.isOpaque = false
+                    window.isOpaque = true
                     window.titleVisibility = .hidden
                     window.standardWindowButton(.closeButton)?.isHidden = true
                     window.standardWindowButton(.miniaturizeButton)?.isHidden = true
@@ -93,17 +108,71 @@ struct StickyView: View {
         }
     }
     
-    func editingView() -> some View {
-        TextEditor(text: $viewModel.contentField)
-            .padding()
-            .font(.body)
-            .textEditorStyle(.plain)
+    private var windowTools: some View {
+        HStack (spacing: 10) {
+            Button {
+                viewModel.updatePinned()
+                dismiss()
+            } label: {
+                Image(systemName: "pin.fill")
+                    .padding(5)
+                    .background(.white.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 5))
+            }
+            
+            .buttonStyle(.plain)
+            
+            Divider()
+                .frame(height: 10)
+                .overlay(.white)
+            
+            Button {
+                viewModel.saveNote(context)
+            } label: {
+                Image(systemName: "checkmark.circle.fill")
+                    .padding(5)
+                    .background(.white.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 5))
+            }
+        }
+        
+        .buttonStyle(.borderless)
+        .padding([.horizontal])
     }
     
-    func presentationView() -> some View {
+    private var titleView: some View {
+        VStack (alignment: .leading, spacing: 2) {
+            TextField("", text: $viewModel.titleField)
+                .textFieldStyle(.plain)
+                .font(.title3.bold())
+            
+            Text("Last modified \(viewModel.getDate()) at \(viewModel.getTime())")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        
+        .padding([.horizontal])
+    }
+    
+    @ViewBuilder
+    func contentArea() -> some View {
+        if viewModel.isEditing {
+            editingView
+        } else {
+            markdownView
+        }
+    }
+    
+    private var editingView: some View {
+        TextEditor(text: $viewModel.contentField)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .textEditorStyle(.plain)
+            .scrollIndicators(.never)
+    }
+    
+    private var markdownView: some View {
         Markdown(markdownText: $viewModel.contentField, viewModel: viewModel)
-            .padding()
-//            .id(viewModel.contentField)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -114,5 +183,5 @@ struct StickyView: View {
 
 #Preview ("StickyView Populated") {
     StickyView(noteItem: .placeholder)
-        .frame(minWidth: 250, idealWidth: 300, minHeight: 200, idealHeight: 300)
+        .frame(minWidth: 250, idealWidth: 300, minHeight: 225, idealHeight: 225)
 }

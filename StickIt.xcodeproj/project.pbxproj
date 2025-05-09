@@ -78,6 +78,7 @@
 		11D354A22DADCC5700514154 /* StickIt-WidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "StickIt-WidgetExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		11D354A42DADCC5700514154 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = /System/Library/Frameworks/WidgetKit.framework; sourceTree = "<absolute>"; };
 		11D354A62DADCC5700514154 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = /System/Library/Frameworks/SwiftUI.framework; sourceTree = "<absolute>"; };
+		11DDB9E42DCD66230054B27D /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -279,6 +280,7 @@
 		11D354A32DADCC5700514154 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				11DDB9E42DCD66230054B27D /* CloudKit.framework */,
 				11AE6A232DB6DFF8004A1E01 /* StoreKit.framework */,
 				11D354A42DADCC5700514154 /* WidgetKit.framework */,
 				11D354A62DADCC5700514154 /* SwiftUI.framework */,
@@ -964,7 +966,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.4;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "alexanderrivera.StickIt-Mac";
+				PRODUCT_BUNDLE_IDENTIFIER = alexanderrivera.StickIt;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = macosx;
@@ -996,7 +998,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.4;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "alexanderrivera.StickIt-Mac";
+				PRODUCT_BUNDLE_IDENTIFIER = alexanderrivera.StickIt;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = macosx;

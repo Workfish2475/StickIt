@@ -20,9 +20,11 @@ struct NotesView: View {
     init(noteItem: Note? = nil) {
         self.noteItem = noteItem
         let viewModel = NoteViewModel()
+        
         if let noteItem = noteItem {
             viewModel.setNote(noteItem)
         }
+        
         _viewModel = State(initialValue: viewModel)
     }
     
@@ -52,10 +54,11 @@ struct NotesView: View {
                     .padding(.horizontal)
                 
                 if viewModel.isEditing {
-                    textEditingView()
+                    textEditingView
                         .frame(maxWidth: .infinity)
+                    
                 } else {
-                    markdownView()
+                    markdownView
                         .onTapGesture {
                             withAnimation {
                                 viewModel.isEditing.toggle()
@@ -72,7 +75,7 @@ struct NotesView: View {
         .background(noteColor.opacity(0.6))
         .toolbar {
             ToolbarItem (placement: .navigation) {
-                editingTools()
+                editingTools
             }
             
             ToolbarItem {
@@ -80,12 +83,12 @@ struct NotesView: View {
             }
             
             ToolbarItem(placement: .primaryAction) {
-                previewTools()
+                previewTools
             }
         }
     }
     
-    func previewTools() -> some View {
+    private var previewTools: some  View {
         HStack {
             Picker("", selection: $viewModel.noteColor) {
                 ForEach(Color.namedColors, id: \.name) { namedColor in
@@ -94,22 +97,26 @@ struct NotesView: View {
                 }
             }
             
-            
             Button {
                 viewModel.updatePinned()
                 openWindow(value: viewModel.noteItem!)
             } label: {
-                Image(systemName: "pin.fill")
+                Label(viewModel.isPinned ? "Unpin" : "Pin", systemImage: "pin.fill")
                     .font(.headline)
+                    .labelStyle(.titleAndIcon)
+                    .foregroundStyle(viewModel.isPinned ? .red : .gray)
             }
             
             .disabled(viewModel.noteItem == nil)
             
+            Divider()
+            
             Button {
                 viewModel.deleteNote(context)
             } label: {
-                Image(systemName: "trash.fill")
+                Label("Trash", systemImage: "trash.fill")
                     .font(.headline)
+                    .labelStyle(.titleAndIcon)
             }
             
             .disabled(viewModel.noteItem == nil)
@@ -117,45 +124,52 @@ struct NotesView: View {
             Button {
                 viewModel.saveNote(context)
             } label: {
-                Image(systemName: "checkmark.circle.fill")
+                Label("Done", systemImage: "checkmark.circle.fill")
                     .font(.headline)
+                    .labelStyle(.titleAndIcon)
             }
         }
     }
     
-    func editingTools() -> some View {
+    private var editingTools: some View {
         HStack {
             Button {
                 
             } label: {
-                Image(systemName: "h.square.fill")
+                Label("Heading", systemImage: "h.square.fill")
                     .font(.headline)
+                    .labelStyle(.titleAndIcon)
             }
             
             Button {
                 
             } label: {
-                Image(systemName: "hammer.fill")
+                Label("Code Block", systemImage: "hammer.fill")
                     .font(.headline)
+                    .labelStyle(.titleAndIcon)
             }
             
             Button {
                 
             } label: {
-                Image(systemName: "link")
+                Label("Link", systemImage: "link")
                     .font(.headline)
+                    .labelStyle(.titleAndIcon)
             }
             
             Button {
                 
             } label: {
-                Image(systemName: "checkmark.square.fill")
+                Label("Checkbox", systemImage: "checkmark.square.fill")
                     .font(.headline)
+                    .labelStyle(.titleAndIcon)
             }
         }
+        
+        .disabled(!viewModel.isEditing)
     }
     
-    func getTimeString() -> String {
+    var getTimeString: String {
         let lastModified = viewModel.lastModified
         
         if (Calendar.current.isDateInToday(lastModified)) {
@@ -165,7 +179,7 @@ struct NotesView: View {
         }
     }
     
-    func textEditingView() -> some View {
+    var textEditingView: some View {
         TextEditor(text: $viewModel.contentField)
             .padding()
             .font(.body)
@@ -173,7 +187,7 @@ struct NotesView: View {
             .submitLabel(.done)
             .foregroundStyle(.white)
             .multilineTextAlignment(.leading)
-            .scrollIndicators(.hidden)
+            .scrollIndicators(.never)
             .background(
                 RoundedRectangle(cornerRadius: 10)
                     .fill(Color(Color(name: viewModel.noteColor).opacity(0.8)))
@@ -184,7 +198,7 @@ struct NotesView: View {
             }
     }
     
-    func markdownView() -> some View {
+    var markdownView: some View {
         Markdown(markdownText: $viewModel.contentField, viewModel: viewModel)
             .frame(maxWidth: .infinity, alignment: .topLeading)
             .padding()
@@ -196,13 +210,14 @@ struct NotesView: View {
             .padding()
             .foregroundStyle(.white)
     }
+    
+    //Open a new window if not open, or close if already open.
+    private func manageWindow() -> Void {
+        
+    }
 }
 
 #Preview {
     NotesView(noteItem: .placeholder)
         .frame(minWidth: 400, idealWidth: 800, minHeight: 400, idealHeight: 800)
-}
-
-#Preview {
-    NotesView(noteItem: .placeholder).editingTools()
 }

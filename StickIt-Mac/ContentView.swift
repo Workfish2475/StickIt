@@ -8,8 +8,6 @@
 import SwiftUI
 import SwiftData
 
-
-// TODO: This looks really bad. Simple, but in the bad way.
 struct ContentView: View {
 
     @Query private var notes: [Note]
