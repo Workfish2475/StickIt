@@ -58,7 +58,7 @@ struct ContentView: View {
             }
         }
         
-        .toolbar(removing: .title)
+        .navigationTitle("StickIt")
         .onChange(of: selectedNote) {
             addingNote = false
         }

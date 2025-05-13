@@ -16,8 +16,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "1136F5602DAB3AB200B18344"
-               BuildableName = "StickIt-Mac.app"
-               BlueprintName = "StickIt-Mac"
+               BuildableName = "StickIt - Sticky Notes.app"
+               BlueprintName = "StickIt - Sticky Notes"
                ReferencedContainer = "container:StickIt.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -69,8 +69,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1136F5602DAB3AB200B18344"
-            BuildableName = "StickIt-Mac.app"
-            BlueprintName = "StickIt-Mac"
+            BuildableName = "StickIt - Sticky Notes.app"
+            BlueprintName = "StickIt - Sticky Notes"
             ReferencedContainer = "container:StickIt.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -86,8 +86,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1136F5602DAB3AB200B18344"
-            BuildableName = "StickIt-Mac.app"
-            BlueprintName = "StickIt-Mac"
+            BuildableName = "StickIt - Sticky Notes.app"
+            BlueprintName = "StickIt - Sticky Notes"
             ReferencedContainer = "container:StickIt.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

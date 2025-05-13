@@ -61,33 +61,6 @@ struct StickyView: View {
             )
         }
         
-        
-        // MARK: - Testing needed
-        .onChange(of: schene) {
-            do {
-                
-                var fetchDesc = FetchDescriptor<Note>()
-                fetchDesc.predicate = #Predicate<Note>{
-                    $0.id == noteItem.id
-                }
-                
-                let cloudNote = try context.fetch(fetchDesc).first
-                
-                guard let cloudNote = cloudNote else {
-                    return
-                }
-                
-                if cloudNote.lastModified == noteItem.lastModified {
-                    return
-                }
-                
-                viewModel.setNote(cloudNote)
-                
-            } catch {
-                print("error: \(error)")
-            }
-        }
-        
         .onChange(of: context) {
             try? context.save()
         }

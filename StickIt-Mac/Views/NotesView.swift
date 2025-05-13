@@ -13,7 +13,10 @@ struct NotesView: View {
     
     @Environment(\.openWindow) private var openWindow
     @Environment(\.modelContext) private var context
+    
     @State private var viewModel: NoteViewModel = NoteViewModel()
+    
+    @State private var updatingTitle: Bool = false
     
     @Namespace private var animation
     
@@ -23,6 +26,8 @@ struct NotesView: View {
         
         if let noteItem = noteItem {
             viewModel.setNote(noteItem)
+        } else {
+            viewModel.titleField = "Untitled Note"
         }
         
         _viewModel = State(initialValue: viewModel)
@@ -35,24 +40,6 @@ struct NotesView: View {
     var body: some View {
         GeometryReader { geo in
             VStack (spacing: 0) {
-                HStack {
-                    TextField ("New Note", text: $viewModel.titleField)
-                        .font(.title.bold())
-                        .textFieldStyle(.plain)
-                        .foregroundStyle(.white)
-                        .onSubmit {
-                            viewModel.updateTitle()
-                        }
-                }
-                
-                .padding([.top, .horizontal])
-                
-                Text("Last Modified \(viewModel.getDate()) at \(viewModel.getTime())")
-                    .font(.footnote.bold())
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal)
-                
                 if viewModel.isEditing {
                     textEditingView
                         .frame(maxWidth: .infinity)
@@ -65,30 +52,45 @@ struct NotesView: View {
                             }
                         }
                 }
-
+                
                 Spacer()
             }
             
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         
+//        .navigationTitle("\(viewModel.titleField)")
+//        .navigationSubtitle("last Modified \(getTimeString)")
+//        .toolbarTitleDisplayMode(.inlineLarge)
+        .toolbar(removing: .title)
         .background(noteColor.opacity(0.6))
         .toolbar {
-            ToolbarItem (placement: .navigation) {
+            ToolbarItemGroup (placement: .navigation) {
+                VStack (alignment: .leading , spacing: 1) {
+                    Text("\(viewModel.titleField)")
+                        .font(.headline)
+                    Text("Last Modified \(getTimeString)")
+                        .font(.subheadline)
+                }
+            }
+            
+            ToolbarItemGroup (placement: .primaryAction) {
+                previewTools
+                
+            }
+            
+            ToolbarItemGroup (placement: .secondaryAction) {
                 editingTools
             }
-            
-            ToolbarItem {
-                Spacer()
-            }
-            
-            ToolbarItem(placement: .primaryAction) {
-                previewTools
-            }
+        }
+        
+        .sheet(isPresented: $updatingTitle) {
+            TextField(viewModel.titleField, text: $viewModel.titleField)
+                .textFieldStyle(.plain)
         }
     }
     
-    private var previewTools: some  View {
+    private var previewTools: some View {
         HStack {
             Picker("", selection: $viewModel.noteColor) {
                 ForEach(Color.namedColors, id: \.name) { namedColor in
@@ -102,32 +104,30 @@ struct NotesView: View {
                 openWindow(value: viewModel.noteItem!)
             } label: {
                 Label(viewModel.isPinned ? "Unpin" : "Pin", systemImage: "pin.fill")
-                    .font(.headline)
-                    .labelStyle(.titleAndIcon)
-                    .foregroundStyle(viewModel.isPinned ? .red : .gray)
+                    .labelStyle(.iconOnly)
             }
             
             .disabled(viewModel.noteItem == nil)
-            
-            Divider()
+            .help("Pin/Unpin")
             
             Button {
                 viewModel.deleteNote(context)
             } label: {
                 Label("Trash", systemImage: "trash.fill")
-                    .font(.headline)
-                    .labelStyle(.titleAndIcon)
+                    .labelStyle(.iconOnly)
             }
             
             .disabled(viewModel.noteItem == nil)
+            .help("Delete Note")
             
             Button {
                 viewModel.saveNote(context)
             } label: {
                 Label("Done", systemImage: "checkmark.circle.fill")
-                    .font(.headline)
-                    .labelStyle(.titleAndIcon)
+                    .labelStyle(.iconOnly)
             }
+            
+            .help("Save note changes")
         }
     }
     
@@ -138,32 +138,40 @@ struct NotesView: View {
             } label: {
                 Label("Heading", systemImage: "h.square.fill")
                     .font(.headline)
-                    .labelStyle(.titleAndIcon)
+                    .labelStyle(.iconOnly)
             }
+            
+            .help("Heading")
             
             Button {
                 
             } label: {
                 Label("Code Block", systemImage: "hammer.fill")
                     .font(.headline)
-                    .labelStyle(.titleAndIcon)
+                    .labelStyle(.iconOnly)
             }
+            
+            .help("Code Block")
             
             Button {
                 
             } label: {
                 Label("Link", systemImage: "link")
                     .font(.headline)
-                    .labelStyle(.titleAndIcon)
+                    .labelStyle(.iconOnly)
             }
+            
+            .help("Link")
             
             Button {
                 
             } label: {
                 Label("Checkbox", systemImage: "checkmark.square.fill")
                     .font(.headline)
-                    .labelStyle(.titleAndIcon)
+                    .labelStyle(.iconOnly)
             }
+            
+            .help("Checkbox")
         }
         
         .disabled(!viewModel.isEditing)
@@ -211,9 +219,19 @@ struct NotesView: View {
             .foregroundStyle(.white)
     }
     
-    //Open a new window if not open, or close if already open.
+    // MARK: - Open a new window if not open, or close if already open.
     private func manageWindow() -> Void {
         
+    }
+}
+
+struct TitleEditView: View {
+    
+    @Binding var noteTitle: String
+    
+    var body: some View {
+        TextField(noteTitle, text: $noteTitle)
+            .textFieldStyle(.plain)
     }
 }
 

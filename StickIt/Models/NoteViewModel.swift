@@ -142,4 +142,8 @@ class NoteViewModel {
             return "\(self.lastModified.formatted(.dateTime.month().day()))"
         }
     }
+    
+    func syncChangess() {
+        
+    }
 }
