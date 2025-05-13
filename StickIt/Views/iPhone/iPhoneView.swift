@@ -18,27 +18,35 @@ struct iPhoneView: View {
     
     let columns = Array(repeating: GridItem(.flexible()), count: 2)
     
-    var pinnedNotes: [Note] {
-        return notes.filter { $0.isPinned }.sorted { $0.lastModified > $1.lastModified }
-    }
-    
-    var generalNotes: [Note] {
-        return notes.filter { !$0.isPinned }.sorted { $0.lastModified > $1.lastModified }
-    }
-    
     var body: some View {
         ZStack (alignment: .bottomTrailing) {
-            ScrollView {
-                if (!pinnedNotes.isEmpty) {
-                    noteSection("Pinned", pinnedNotes)
+            VStack {
+                Group {
+                    let pinnedNotes = notes.filter({ $0.isPinned })
+                    let generalNotes = notes.filter({ !$0.isPinned })
+                    
+                    if pinnedNotes.isEmpty && generalNotes.isEmpty {
+                        ContentUnavailableView {
+                            Label("No Notes Found", systemImage: "note.text")
+                                .foregroundStyle(Color.accentColor.gradient)
+                        } description: {
+                            Text("Add your first note by tapping the plus button in the bottom right corner.")
+                        }
+                    } else {
+                        ScrollView {
+                            if (!pinnedNotes.isEmpty) {
+                                noteSection("Pinned", pinnedNotes)
+                            }
+                            
+                            if (!generalNotes.isEmpty) {
+                                noteSection("General", generalNotes)
+                            }
+                        }
+                    }
                 }
                 
-                if (!generalNotes.isEmpty) {
-                    noteSection("General", generalNotes)
-                }
+                .frame(maxWidth: .infinity)
             }
-            
-            .frame(maxWidth: .infinity)
             
             buttonView()
                 .matchedTransitionSource(id: "newNote", in: namespace)
@@ -56,6 +64,13 @@ struct iPhoneView: View {
                     .navigationTransition(.zoom(sourceID: "newNote", in: namespace))
             }
         }
+        
+        .onAppear() {
+            print("Note items: ")
+            for note in notes {
+                print("\(note.name)")
+            }
+        }
     }
     
     func buttonView() -> some View {
@@ -66,6 +81,7 @@ struct iPhoneView: View {
                 .frame(width: 45, height: 45)
                 .padding()
                 .frame(alignment: .bottomTrailing)
+                .shadow(color: Color.primary.opacity(0.1), radius: 9, x: 0, y: 5)
         }
     }
     

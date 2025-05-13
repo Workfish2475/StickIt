@@ -32,6 +32,10 @@ struct NoteView: View {
         _viewModel = State(initialValue: viewModel)
     }
     
+    private var viewColor: Color {
+        return Color(name: viewModel.noteColor)
+    }
+    
     var body: some View {
         GeometryReader { geo in
             ZStack (alignment: .topTrailing) {
@@ -81,8 +85,9 @@ struct NoteView: View {
             
             .sensoryFeedback(.impact, trigger: viewModel.isEditing)
             .navigationBarBackButtonHidden(true)
-            .background(Color(name: viewModel.noteColor).opacity(0.6))
+            .background(viewColor.opacity(0.6))
             .animation(.easeIn, value: viewModel.isEditing)
+            .toolbarBackground(viewColor.opacity(0.8), for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
@@ -137,7 +142,21 @@ struct NoteView: View {
                     }
                 }
 
-                keyboardToolbar
+                ToolbarItemGroup(placement: .keyboard) {
+                    keyboardToolbar
+                }
+                
+                ToolbarItem (placement: .keyboard) {
+                    Button {
+                        dismissKeyboard()
+                        viewModel.isEditing.toggle()
+                    } label: {
+                        Image(systemName: "arrow.down")
+                            .fontWeight(.bold)
+                    }
+                    
+                    .tint(viewColor)
+                }
             }
         }
         
@@ -191,7 +210,7 @@ struct NoteView: View {
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 10)
-                        .fill(Color(Color(name: viewModel.noteColor).opacity(0.8)))
+                        .fill(Color(viewColor.opacity(0.8)))
                 )
                 .padding()
                 
@@ -205,9 +224,39 @@ struct NoteView: View {
         }
     }
     
-    private var keyboardToolbar: some ToolbarContent {
-        ToolbarItemGroup(placement: .keyboard) {
-            Text("Work in progress...")
+    private var keyboardToolbar: some View {
+        ScrollView (.horizontal) {
+            HStack (spacing: 10) {
+                Button {
+                    
+                } label: {
+                    Image(systemName: "textformat")
+                        .fontWeight(.bold)
+                }
+                
+                Button {
+                    
+                } label: {
+                    Image(systemName: "checkmark")
+                        .fontWeight(.bold)
+                }
+                
+                Button {
+                    
+                } label: {
+                    Image(systemName: "chevron.left.forwardslash.chevron.right")
+                        .fontWeight(.bold)
+                }
+                
+                Button {
+                    
+                } label: {
+                    Image(systemName: "link")
+                        .fontWeight(.bold)
+                }
+            }
+            
+            .tint(viewColor)
         }
     }
     
@@ -219,7 +268,7 @@ struct NoteView: View {
             .foregroundStyle(.white)
             .background(
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(Color(name: viewModel.noteColor).opacity(0.8)))
+                    .fill(Color(viewColor.opacity(0.8)))
             )
             .padding()
     }
