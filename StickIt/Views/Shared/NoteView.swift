@@ -38,56 +38,63 @@ struct NoteView: View {
     
     var body: some View {
         GeometryReader { geo in
-            ZStack (alignment: .topTrailing) {
-                ScrollView {
-                    VStack(spacing: 5) {
-                        titleSection
-                        
-                        Group {
-                            if viewModel.isEditing {
-                                textEditingView   
-                            } else {
-                                markdownPresentation
-                            }
-                        }
-                        
-                        .frame(minHeight: geo.size.height * 0.9, maxHeight: .infinity, alignment: .top)
-                        .ignoresSafeArea(.keyboard, edges: .bottom)
-                        .onTapGesture {
-                            withAnimation {
-                                viewModel.isEditing.toggle()
-                            }
-                        }
+            ScrollView {
+                titleSection
+                
+                Group {
+                    if viewModel.isEditing {
+                        textEditingView
+                    } else {
+                        markdownPresentation
                     }
-                    
-                    .frame(minHeight: geo.size.height * 0.9, alignment: .top)
-                    .background(
-                            GeometryReader { proxy in
-                                Color.clear
-                                    .preference(key: ScrollOffsetKey.self, value: proxy.frame(in: .named("scroll")).minY)
-                            }
-                        )
                 }
                 
-                .scrollDismissesKeyboard(.interactively)
-                .scrollIndicators(.hidden)
-                .coordinateSpace(name: "scroll")
-                .onPreferenceChange(ScrollOffsetKey.self) { value in
-                    scrollOffset = value
-                }
-                
+                .frame(minHeight: geo.size.height * 0.9, maxHeight: .infinity, alignment: .top)
+                .ignoresSafeArea(.keyboard, edges: .bottom)
                 .onTapGesture {
-                    dismissKeyboard()
-                    viewModel.updateLastModified()
-                    viewModel.saveNote(context)
+                    withAnimation {
+                        viewModel.isEditing.toggle()
+                    }
                 }
+                
+                .frame(minHeight: geo.size.height * 0.9, alignment: .top)
+                .background(
+                        GeometryReader { proxy in
+                            Color.clear
+                                .preference(key: ScrollOffsetKey.self, value: proxy.frame(in: .named("scroll")).minY)
+                        }
+                    )
+            }
+            
+            .scrollDismissesKeyboard(.interactively)
+            .scrollIndicators(.hidden)
+            .coordinateSpace(name: "scroll")
+            .onPreferenceChange(ScrollOffsetKey.self) { value in
+                scrollOffset = value
+            }
+            
+            .onTapGesture {
+                dismissKeyboard()
+                viewModel.updateLastModified()
+                viewModel.saveNote(context)
             }
             
             .sensoryFeedback(.impact, trigger: viewModel.isEditing)
             .navigationBarBackButtonHidden(true)
             .background(viewColor.opacity(0.6))
             .animation(.easeIn, value: viewModel.isEditing)
-            .toolbarBackground(viewColor.opacity(0.8), for: .navigationBar)
+            .navigationBarTitleDisplayMode(.inline)
+            
+            .toolbarBackground(
+                scrollOffset < 50 ? .visible : .hidden,
+                for: .navigationBar
+            )
+            
+            .toolbarBackground(
+                viewColor.opacity(0.6),
+                for: .navigationBar
+            )
+            
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {

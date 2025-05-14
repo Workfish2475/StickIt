@@ -64,13 +64,6 @@ struct iPhoneView: View {
                     .navigationTransition(.zoom(sourceID: "newNote", in: namespace))
             }
         }
-        
-        .onAppear() {
-            print("Note items: ")
-            for note in notes {
-                print("\(note.name)")
-            }
-        }
     }
     
     func buttonView() -> some View {
@@ -92,14 +85,15 @@ struct iPhoneView: View {
                     NavigationLink(value: note) {
                         NoteItem(noteItem: note)
                             .matchedTransitionSource(id: note.persistentModelID, in: namespace)
-                            .frame(width: 175, height: 175)
+                            .frame(width: 160, height: 175)
                             .frame(maxWidth: 175, maxHeight: 175)
+                            .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 1)
                     }
                 }
             } header: {
                 HStack {
-                    Text("\(title)")
-                        .font(.caption.bold())
+                    Text(title)
+                        .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.secondary)
                     
                     Spacer()
@@ -107,8 +101,14 @@ struct iPhoneView: View {
             }
         }
         
-        .frame(maxWidth: .infinity)
         .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(.ultraThinMaterial)
+                .shadow(color: .black.opacity(0.03), radius: 5, x: 0, y: 1)
+        )
+        .padding()
+        .frame(maxWidth: .infinity)
     }
 }
 

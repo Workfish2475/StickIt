@@ -15,24 +15,35 @@ struct iPadView: View {
     @State private var showingEntry: Bool = false
     @Environment(\.colorScheme) private var scheme
     
-    var pinnedNotes: [Note] {
-        return notes.filter { $0.isPinned }
-    }
-    
-    var generalNotes: [Note] {
-        return notes.filter { !$0.isPinned }
-    }
-    
     var body: some View {
         ZStack (alignment: .bottomTrailing) {
-            ScrollView {
-                if (!pinnedNotes.isEmpty) {
-                    noteSection("Pinned", pinnedNotes)
+            VStack {
+                Group {
+                    
+                    let pinnedNotes = notes.filter({ $0.isPinned })
+                    let generalNotes = notes.filter({ !$0.isPinned })
+                    
+                    if pinnedNotes.isEmpty && generalNotes.isEmpty {
+                        ContentUnavailableView {
+                            Label("No Notes Found", systemImage: "note.text")
+                                .foregroundStyle(Color.accentColor.gradient)
+                        } description: {
+                            Text("Add your first note by tapping the plus button in the bottom right corner.")
+                        }
+                    } else {
+                        ScrollView {
+                            if (!pinnedNotes.isEmpty) {
+                                noteSection("Pinned", pinnedNotes)
+                            }
+                            
+                            if (!generalNotes.isEmpty) {
+                                noteSection("General", generalNotes)
+                            }
+                        }
+                    }
                 }
                 
-                if (!generalNotes.isEmpty) {
-                    noteSection("General", generalNotes)
-                }
+                .frame(maxWidth: .infinity)
             }
             
             buttonView()
@@ -65,28 +76,31 @@ struct iPadView: View {
         }
     }
     
-    func noteSection(_ title: String ,_ noteItems: [Note]) -> some View {
-        VStack (alignment: .leading) {
-            Text("\(title)")
-                .font(.caption.bold())
+    func noteSection(_ title: String, _ noteItems: [Note]) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(.secondary)
-            
-            FlowLayout (spacing: 10, alignment: .leading) {
-                ForEach(noteItems, id:\.persistentModelID){ note in
+
+            FlowLayout(spacing: 10, alignment: .leading) {
+                ForEach(noteItems, id: \.persistentModelID) { note in
                     NavigationLink(value: note) {
                         NoteItem(noteItem: note)
                             .matchedTransitionSource(id: note.persistentModelID, in: namespace)
                             .frame(width: 275, height: 200)
-                            .frame(maxWidth: 275, maxHeight: 200)
+                            .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 1)
                     }
                 }
             }
-            
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        
-        .frame(maxWidth: .infinity)
         .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(.ultraThinMaterial)
+                .shadow(color: .black.opacity(0.03), radius: 5, x: 0, y: 1)
+        )
+        .padding(.horizontal)
     }
 }
 
