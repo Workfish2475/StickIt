@@ -14,13 +14,11 @@ struct NoteView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     
-    @State private var scrollOffset: CGFloat = 0
-    
-    @State var text = ""
-    @State private var selection: TextSelection? = nil
-    
     @FocusState private var hasFocus
     
+    @State private var scrollOffset: CGFloat = 0
+    @State private var selection: TextSelection? = nil
+    @State private var selectedRange: NSRange = NSRange(location: 0, length: 0)
     @State private var viewModel: NoteViewModel = NoteViewModel()
     
     init(noteItem: Note? = nil) {
@@ -43,7 +41,7 @@ struct NoteView: View {
                 
                 Group {
                     if viewModel.isEditing {
-                        textEditingView
+                        textEditingViewPrototype
                     } else {
                         markdownPresentation
                     }
@@ -104,7 +102,7 @@ struct NoteView: View {
                             .labelStyle(.titleAndIcon)
                     }
                     
-                    .tint(.white)
+                    .tint(.primary)
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
@@ -139,7 +137,7 @@ struct NoteView: View {
                     } label: {
                         Image(systemName: "ellipsis.circle")
                             .imageScale(.large)
-                            .foregroundColor(.white)
+                            .foregroundColor(.primary)
                     }
                 }
                 
@@ -176,12 +174,12 @@ struct NoteView: View {
         VStack {
             TextField("New Note", text: $viewModel.titleField)
                 .font(.largeTitle.bold())
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
                 .onSubmit {
                     viewModel.updateTitle()
                 }
             Text("Last modified \(viewModel.getDate()) at \(viewModel.getTime())")
-                .font(.caption)
+                .font(.caption.bold())
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -195,7 +193,7 @@ struct NoteView: View {
              UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
          } label: {
              Text("Done")
-                 .foregroundColor(.white)
+                 .foregroundColor(.primary)
                  .fontWeight(.bold)
          }
     }
@@ -231,40 +229,84 @@ struct NoteView: View {
         }
     }
     
+    //FIXME: Some issue going on with dismissing the keyboard will cause it to comeback then dismiss
+    var textEditingViewPrototype: some View {
+        ScrollViewReader { proxy in
+            UIKitTextView(
+                "",
+                text: $viewModel.contentField,
+                selectedRange: $selectedRange,
+                keyboardToolbar: keyboardToolbar.eraseToAnyView()
+            )
+            
+            .padding()
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color(viewColor.opacity(0.8)))
+            )
+            .padding()
+            .onChange(of: viewModel.contentField) {
+                proxy.scrollTo("textEditor", anchor: .bottom)
+            }
+        }
+    }
+
+    
     private var keyboardToolbar: some View {
-        ScrollView (.horizontal) {
-            HStack (spacing: 10) {
-                Button {
-                    
-                } label: {
-                    Image(systemName: "textformat")
-                        .fontWeight(.bold)
-                }
+        HStack (spacing: 10) {
+            Button {
                 
-                Button {
-                    
-                } label: {
-                    Image(systemName: "checkmark")
-                        .fontWeight(.bold)
-                }
-                
-                Button {
-                    
-                } label: {
-                    Image(systemName: "chevron.left.forwardslash.chevron.right")
-                        .fontWeight(.bold)
-                }
-                
-                Button {
-                    
-                } label: {
-                    Image(systemName: "link")
-                        .fontWeight(.bold)
-                }
+            } label: {
+                Image(systemName: "textformat")
+                    .fontWeight(.bold)
             }
             
-            .tint(viewColor)
+            Button {
+                let cursorLocation = selectedRange.location
+                
+                if let stringIndex = viewModel.contentField.index(
+                    viewModel.contentField.startIndex,
+                    offsetBy: cursorLocation,
+                    limitedBy: viewModel.contentField.endIndex)
+                {
+                    let insertion = "\n[ ] "
+                    viewModel.contentField.insert(contentsOf: insertion, at: stringIndex)
+                    
+                    let newCursorLocation = cursorLocation + insertion.count
+                    selectedRange = NSRange(location: newCursorLocation, length: 0)
+                }
+            } label: {
+                Image(systemName: "checkmark")
+                    .fontWeight(.bold)
+            }
+            
+            Button {
+                
+            } label: {
+                Image(systemName: "chevron.left.forwardslash.chevron.right")
+                    .fontWeight(.bold)
+            }
+            
+            Button {
+                
+            } label: {
+                Image(systemName: "link")
+                    .fontWeight(.bold)
+            }
+            
+            Spacer()
+            
+            Button {
+                dismissKeyboard()
+                viewModel.isEditing.toggle()
+            } label: {
+                Image(systemName: "arrow.down")
+                    .fontWeight(.bold)
+            }
         }
+        
+        .tint(viewColor)
+        .padding(.horizontal)
     }
     
     private var markdownPresentation: some View {
@@ -272,7 +314,7 @@ struct NoteView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             .id(viewModel.contentField)
             .padding()
-            .foregroundStyle(.white)
+            .foregroundStyle(.primary)
             .background(
                 RoundedRectangle(cornerRadius: 10)
                     .fill(Color(viewColor.opacity(0.8)))

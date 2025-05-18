@@ -121,15 +121,13 @@ struct Markdown: View {
             let itemText = String(line[textStartIndex...]).trimmingCharacters(in: .whitespaces)
             
             return AnyView(
-                HStack {
+                HStack (alignment: .top) {
                     Image(systemName: item == "x" ? "checkmark.square.fill" : "square")
                         .onTapGesture {
                             var newLine = line
                             newLine.replaceSubrange(openBracket...closeBracket, with: item == "x" ? "[ ]" : "[x]")
-                            
-//                            let generator = UIImpactFeedbackGenerator(style: .light)
-//                            generator.impactOccurred()
-                            
+//                          let generator = UIImpactFeedbackGenerator(style: .light)
+//                          generator.impactOccurred()
                             updateLine(newLine, index)
                         }
                     

@@ -16,6 +16,7 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
     @Binding var text: String
     @Binding var selectedRange: NSRange
     @Binding var calculatedHeight: CGFloat
+    var inputAccessoryView: UIView?
     var onDone: (() -> Void)?
 
     func makeUIView(context: UIViewRepresentableContext<UITextViewWrapper>) -> UITextView {
@@ -32,6 +33,7 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
             textView.returnKeyType = .done
         }
 
+        textView.inputAccessoryView = inputAccessoryView
         textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return textView
     }
@@ -40,9 +42,11 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
         if textView.text != self.text {
             textView.text = self.text
         }
+        
         if textView.selectedRange != selectedRange {
             textView.selectedRange = selectedRange
         }
+        
         if textView.window != nil, !textView.isFirstResponder {
             textView.becomeFirstResponder()
         }
@@ -56,7 +60,7 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
         let newSize = view.sizeThatFits(CGSize(width: view.frame.size.width, height: CGFloat.greatestFiniteMagnitude))
         if result.wrappedValue != newSize.height {
             DispatchQueue.main.async {
-                result.wrappedValue = newSize.height // !! must be called asynchronously
+                result.wrappedValue = newSize.height
             }
         }
     }
@@ -91,7 +95,6 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
         func textViewDidChangeSelection(_ textView: UITextView) {
             selection.wrappedValue = textView.selectedRange
         }
-    
     }
 }
 
@@ -99,6 +102,7 @@ struct UIKitTextView: View {
 
     private var placeholder: String
     private var onCommit: (() -> Void)?
+    private var keyboardToolbar: AnyView?
 
     @Binding private var text: String
     @Binding private var selectedRange: NSRange
@@ -110,21 +114,33 @@ struct UIKitTextView: View {
         }
     }
 
-    @State private var dynamicHeight: CGFloat = 100
+    @State private var dynamicHeight: CGFloat = 500
     @State private var showingPlaceholder = false
 
-    init (_ placeholder: String = "", text: Binding<String>, selectedRange: Binding<NSRange>, onCommit: (() -> Void)? = nil) {
+    init (_ placeholder: String = "", text: Binding<String>, selectedRange: Binding<NSRange>, onCommit: (() -> Void)? = nil, keyboardToolbar: AnyView? = nil) {
         self.placeholder = placeholder
         self._text = text
         self._selectedRange = selectedRange
         self.onCommit = onCommit
         self._showingPlaceholder = State<Bool>(initialValue: self.text.isEmpty)
+        self.keyboardToolbar = keyboardToolbar
     }
 
     var body: some View {
-        UITextViewWrapper(text: self.internalText, selectedRange: $selectedRange, calculatedHeight: $dynamicHeight)
-            .frame(minHeight: dynamicHeight, maxHeight: dynamicHeight)
-            .background(placeholderView, alignment: .topLeading)
+        UITextViewWrapper(
+            text: self.internalText,
+            selectedRange: $selectedRange,
+            calculatedHeight: $dynamicHeight,
+            inputAccessoryView: keyboardToolbar.map {
+                let hosting = UIHostingController(rootView: $0)
+                hosting.view.translatesAutoresizingMaskIntoConstraints = false
+                hosting.view.heightAnchor.constraint(equalToConstant: 44).isActive = true
+                return hosting.view
+            },
+            onDone: onCommit
+        )
+        .frame(minHeight: dynamicHeight, maxHeight: .infinity)
+        .background(placeholderView, alignment: .topLeading)
     }
 
     var placeholderView: some View {
@@ -135,5 +151,11 @@ struct UIKitTextView: View {
                     .padding(.top, 8)
             }
         }
+    }
+}
+
+extension View {
+    func eraseToAnyView() -> AnyView {
+        AnyView(self)
     }
 }
