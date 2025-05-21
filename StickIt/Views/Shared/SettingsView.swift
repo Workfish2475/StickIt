@@ -19,6 +19,10 @@ struct SettingsView: View {
                     NavigationLink(destination: AppearancePicker()) {
                         Label("Theme", systemImage: "moon")
                     }
+                    
+                    NavigationLink(destination: TextColorPicker()) {
+                        Label("Text Color", systemImage: "character")
+                    }
                 }
                 
                 Section ("App info") {
@@ -86,7 +90,7 @@ struct WhatsNew: View {
             item("iCloud Sync", "Sync your notes automatically across devices.", "icloud.fill")
             item("Home Screen Widgets", "Access notes quickly from your Home Screen.", "square.grid.2x2.fill")
             item("Pinnable Notes", "Keep important notes at the top of your list.", "pin.fill")
-            item("Customizable Notes", "Style your notes with fonts and colors.", "paintpalette.fill")
+            item("Customizable Notes", "Style your notes with colors.", "paintpalette.fill")
             
             Spacer()
             
@@ -137,6 +141,7 @@ struct WhatsNew: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
+
 
 #Preview ("Settings") {
     SettingsView()

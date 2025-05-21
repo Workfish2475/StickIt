@@ -95,7 +95,7 @@ struct ContentView: View {
     
 #Preview {
     let defaults = UserDefaults.standard
-//    defaults.set(true, forKey: "showingNew")
+    //defaults.set(true, forKey: "showingNew")
     
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
     let container = try! ModelContainer(for: Note.self, configurations: config)

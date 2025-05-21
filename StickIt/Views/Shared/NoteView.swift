@@ -19,6 +19,7 @@ struct NoteView: View {
     @State private var scrollOffset: CGFloat = 0
     @State private var selection: TextSelection? = nil
     @State private var selectedRange: NSRange = NSRange(location: 0, length: 0)
+    @State private var showingHeaderView: Bool = false
     @State private var viewModel: NoteViewModel = NoteViewModel()
     
     init(noteItem: Note? = nil) {
@@ -146,10 +147,6 @@ struct NoteView: View {
                         editingView
                     }
                 }
-
-                ToolbarItemGroup(placement: .keyboard) {
-                    keyboardToolbar
-                }
                 
                 ToolbarItem (placement: .keyboard) {
                     Button {
@@ -250,20 +247,26 @@ struct NoteView: View {
             }
         }
     }
-
     
+    
+    //TODO: Extract button actions to their own function
     private var keyboardToolbar: some View {
         HStack (spacing: 10) {
             Button {
-                
+                showingHeaderView.toggle()
             } label: {
                 Image(systemName: "textformat")
                     .fontWeight(.bold)
             }
             
+            .popover(isPresented: $showingHeaderView, attachmentAnchor: .point(.top), arrowEdge: .bottom) {
+                headerPicker
+                    .presentationCompactAdaptation(.popover)
+                    .padding()
+            }
+            
             Button {
                 let cursorLocation = selectedRange.location
-                
                 if let stringIndex = viewModel.contentField.index(
                     viewModel.contentField.startIndex,
                     offsetBy: cursorLocation,
@@ -281,14 +284,34 @@ struct NoteView: View {
             }
             
             Button {
-                
+                let cursorLocation = selectedRange.location
+                if let stringIndex = viewModel.contentField.index(
+                    viewModel.contentField.startIndex,
+                    offsetBy: cursorLocation,
+                    limitedBy: viewModel.contentField.endIndex)
+                {
+                    let insertion = "\n```Code```"
+                    viewModel.contentField.insert(contentsOf: insertion, at: stringIndex)
+                    let newCursorLocation = cursorLocation + insertion.count - 3
+                    selectedRange = NSRange(location: newCursorLocation, length: 0)
+                }
             } label: {
                 Image(systemName: "chevron.left.forwardslash.chevron.right")
                     .fontWeight(.bold)
             }
             
             Button {
-                
+                let cursorLocation = selectedRange.location
+                if let stringIndex = viewModel.contentField.index(
+                    viewModel.contentField.startIndex,
+                    offsetBy: cursorLocation,
+                    limitedBy: viewModel.contentField.endIndex)
+                {
+                    let insertion = "\n[]()"
+                    viewModel.contentField.insert(contentsOf: insertion, at: stringIndex)
+                    let newCursorLocation = cursorLocation + insertion.count - 3
+                    selectedRange = NSRange(location: newCursorLocation, length: 0)
+                }
             } label: {
                 Image(systemName: "link")
                     .fontWeight(.bold)
@@ -321,6 +344,52 @@ struct NoteView: View {
             )
             .padding()
     }
+    
+    var headerPicker: some View {
+        VStack (alignment: .leading) {
+            Text("Headings")
+                .font(.headline)
+            
+            HStack {
+                ForEach(1...4, id: \.self){ idx in
+                    Button {
+                        let cursorLocation = selectedRange.location
+                        if let stringIndex = viewModel.contentField.index(
+                            viewModel.contentField.startIndex,
+                            offsetBy: cursorLocation,
+                            limitedBy: viewModel.contentField.endIndex)
+                        {
+                            let item = Array(repeating: "#", count: idx)
+                            let insertion = item.joined() + ""
+                            viewModel.contentField.insert(contentsOf: insertion, at: stringIndex)
+                            let newCursorLocation = cursorLocation + insertion.count
+                            selectedRange = NSRange(location: newCursorLocation, length: 0)
+                        }
+                        
+                        showingHeaderView.toggle()
+                    } label: {
+                        Text("\(idx)")
+                    }
+                    
+                    .foregroundStyle(.primary)
+                    .buttonStyle(.borderedProminent)
+                }
+            }
+        }
+    }
+    
+    private func addContent(_ content: String) {
+        let cursorLocation = selectedRange.location
+        if let stringIndex = viewModel.contentField.index(
+            viewModel.contentField.startIndex,
+            offsetBy: cursorLocation,
+            limitedBy: viewModel.contentField.endIndex)
+        {
+            viewModel.contentField.insert(contentsOf: content, at: stringIndex)
+            let newCursorLocation = cursorLocation + content.count - 3
+            selectedRange = NSRange(location: newCursorLocation, length: 0)
+        }
+    }
 }
 
 // Credit: https://medium.com/@felipaugsts/detect-scroll-position-swiftui-86ff2b8fda82
@@ -335,4 +404,8 @@ private struct ScrollOffsetKey: PreferenceKey {
     NavigationStack {
         NoteView(noteItem: .placeholder)
     }
+}
+
+#Preview ("HeaderView") {
+    NoteView.init(noteItem: .placeholder).headerPicker
 }

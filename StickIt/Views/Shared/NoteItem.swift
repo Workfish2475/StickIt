@@ -11,38 +11,42 @@ struct NoteItem: View {
     let noteItem: Note
     
     @Environment(\.modelContext) private var context
+    @Environment(\.colorScheme) private var scheme
+    
+    private var color: Color {
+        return scheme == .dark ? .white : .black
+    }
 
     var body: some View {
         GeometryReader { geo in
-            VStack(alignment: .leading, spacing: 8) {
-                Text(noteItem.name)
-                    .font(.title3.bold())
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                Text(getTimeString(noteItem))
-                    .font(.caption.bold())
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+            VStack(alignment: .leading, spacing: 10) {
+                VStack {
+                    Text(noteItem.name)
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Text(getTimeString(noteItem))
+                        .font(.caption.bold())
+                        .foregroundStyle(.secondary.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
 
                 ZStack(alignment: .topLeading) {
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color(name: noteItem.color))
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(Color(name: noteItem.color).opacity(0.8))
 
                     ScrollView {
                         Markdown(markdownText: .constant(noteItem.content))
                             .id(noteItem.content)
                             .multilineTextAlignment(.leading)
                             .disabled(true)
-                            .scaleEffect(0.8, anchor: .topLeading)
                             .font(.system(size: 14))
                             .padding()
                     }
                     
                     .scrollIndicators(.hidden)
-                    
                 }
                 
-                .frame(height: geo.size.height * 0.5)
+                .frame(height: geo.size.height * 0.55)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
             }
             

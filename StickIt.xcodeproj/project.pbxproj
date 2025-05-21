@@ -104,6 +104,7 @@
 				Misc/FlowLayout.swift,
 				Misc/Markdown.swift,
 				Misc/StoreKitManager.swift,
+				Misc/TextColor.swift,
 				Models/NoteViewModel.swift,
 			);
 			target = 1136F5602DAB3AB200B18344 /* StickIt - Sticky Notes */;
@@ -129,6 +130,7 @@
 				Misc/Colors.swift,
 				Misc/Markdown.swift,
 				Misc/StoreKitManager.swift,
+				Misc/TextColor.swift,
 				Misc/UITextViewWrapper.swift,
 				Models/NoteViewModel.swift,
 			);
