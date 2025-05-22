@@ -11,11 +11,7 @@ struct NoteItem: View {
     let noteItem: Note
     
     @Environment(\.modelContext) private var context
-    @Environment(\.colorScheme) private var scheme
-    
-    private var color: Color {
-        return scheme == .dark ? .white : .black
-    }
+    @AppStorage("textColor") private var textColor: TextColor = .black
 
     var body: some View {
         GeometryReader { geo in
@@ -51,7 +47,7 @@ struct NoteItem: View {
             }
             
             .padding()
-            .foregroundStyle(.white)
+            .foregroundStyle(textColor.color)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .background(
                 RoundedRectangle(cornerRadius: 10)

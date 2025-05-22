@@ -22,6 +22,8 @@ struct NoteView: View {
     @State private var showingHeaderView: Bool = false
     @State private var viewModel: NoteViewModel = NoteViewModel()
     
+    @AppStorage("textColor") private var textColor: TextColor = .black
+    
     init(noteItem: Note? = nil) {
         self.noteItem = noteItem
         let viewModel = NoteViewModel()
@@ -103,7 +105,7 @@ struct NoteView: View {
                             .labelStyle(.titleAndIcon)
                     }
                     
-                    .tint(.primary)
+                    .tint(textColor.color)
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
@@ -138,7 +140,7 @@ struct NoteView: View {
                     } label: {
                         Image(systemName: "ellipsis.circle")
                             .imageScale(.large)
-                            .foregroundColor(.primary)
+                            .foregroundColor(textColor.color)
                     }
                 }
                 
@@ -157,7 +159,7 @@ struct NoteView: View {
                             .fontWeight(.bold)
                     }
                     
-                    .tint(viewColor)
+                    .tint(textColor.color)
                 }
             }
         }
@@ -171,7 +173,7 @@ struct NoteView: View {
         VStack {
             TextField("New Note", text: $viewModel.titleField)
                 .font(.largeTitle.bold())
-                .foregroundStyle(.primary)
+                .foregroundStyle(textColor.color)
                 .onSubmit {
                     viewModel.updateTitle()
                 }
@@ -190,7 +192,7 @@ struct NoteView: View {
              UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
          } label: {
              Text("Done")
-                 .foregroundColor(.primary)
+                 .foregroundStyle(textColor.color)
                  .fontWeight(.bold)
          }
     }
@@ -226,7 +228,6 @@ struct NoteView: View {
         }
     }
     
-    //FIXME: Some issue going on with dismissing the keyboard will cause it to comeback then dismiss
     var textEditingViewPrototype: some View {
         ScrollViewReader { proxy in
             UIKitTextView(
@@ -248,8 +249,6 @@ struct NoteView: View {
         }
     }
     
-    
-    //TODO: Extract button actions to their own function
     private var keyboardToolbar: some View {
         HStack (spacing: 10) {
             Button {
@@ -337,7 +336,7 @@ struct NoteView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             .id(viewModel.contentField)
             .padding()
-            .foregroundStyle(.primary)
+            .foregroundStyle(textColor.color)
             .background(
                 RoundedRectangle(cornerRadius: 10)
                     .fill(Color(viewColor.opacity(0.8)))
@@ -369,9 +368,10 @@ struct NoteView: View {
                         showingHeaderView.toggle()
                     } label: {
                         Text("\(idx)")
+                            .fontWeight(.bold)
                     }
                     
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(textColor.color)
                     .buttonStyle(.borderedProminent)
                 }
             }

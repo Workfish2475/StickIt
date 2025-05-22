@@ -85,7 +85,7 @@ struct iPhoneView: View {
                     NavigationLink(value: note) {
                         NoteItem(noteItem: note)
                             .matchedTransitionSource(id: note.persistentModelID, in: namespace)
-                            .frame(width: 160, height: 175)
+                            .frame(height: 175)
                             .frame(maxWidth: 175, maxHeight: 175)
                             .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 1)
                     }

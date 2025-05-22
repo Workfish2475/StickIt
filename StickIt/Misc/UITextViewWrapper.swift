@@ -11,6 +11,9 @@ import UIKit
 import SwiftUI
 
 fileprivate struct UITextViewWrapper: UIViewRepresentable {
+    
+    @AppStorage("textColor") private var textColor: TextColor = .black
+    
     typealias UIViewType = UITextView
 
     @Binding var text: String
@@ -32,7 +35,13 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
         if nil != onDone {
             textView.returnKeyType = .done
         }
-
+        
+        if textColor == .black {
+            textView.textColor = .black
+        } else {
+            textView.textColor = .white
+        }
+        
         textView.inputAccessoryView = inputAccessoryView
         textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return textView
