@@ -62,6 +62,7 @@ struct NotesView: View {
 //        .navigationTitle("\(viewModel.titleField)")
 //        .navigationSubtitle("last Modified \(getTimeString)")
 //        .toolbarTitleDisplayMode(.inlineLarge)
+        
         .toolbar(removing: .title)
         .background(noteColor.opacity(0.6))
         .toolbar {

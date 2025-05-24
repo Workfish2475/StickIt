@@ -65,8 +65,63 @@ struct ContentView: View {
     }
 }
 
+// MARK: - Test AppKit implementation
+struct MyAppKitView: NSViewRepresentable {
+    func makeNSView(context: Context) -> NSView {
+        let myView = NSView()
+        myView.wantsLayer = true
+        myView.layer?.backgroundColor = NSColor.red.cgColor
+
+        DispatchQueue.main.async {
+            if let window = myView.window {
+                let toolbar = NSToolbar(identifier: "MyToolbar")
+                toolbar.delegate = context.coordinator
+                window.toolbar = toolbar
+            }
+        }
+
+        return myView
+    }
+
+    // Read docs for this function
+    func updateNSView(_ nsView: NSView, context: Context) {
+        // You could update the toolbar here if needed
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
+    class Coordinator: NSObject, NSToolbarDelegate {
+        func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
+            return [.toggleSidebar, .flexibleSpace]
+        }
+
+        func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
+            return [.toggleSidebar, .showColors]
+        }
+
+        func toolbar(_ toolbar: NSToolbar, itemForItemIdentifier itemIdentifier: NSToolbarItem.Identifier, willBeInsertedIntoToolbar flag: Bool) -> NSToolbarItem? {
+            let item = NSToolbarItem(itemIdentifier: itemIdentifier)
+            
+            return item
+        }
+
+        //Need to implement action here.
+        @objc func toggleAction() {
+            print("Toggle toolbar item tapped")
+        }
+    }
+}
+
 struct ContentView_Previews : PreviewProvider {
     static var previews: some View {
         ContentView()
+    }
+}
+
+struct MyAppKitView_Previews : PreviewProvider {
+    static var previews: some View {
+        MyAppKitView()
     }
 }

@@ -126,8 +126,6 @@ struct Markdown: View {
                         .onTapGesture {
                             var newLine = line
                             newLine.replaceSubrange(openBracket...closeBracket, with: item == "x" ? "[ ]" : "[x]")
-//                          let generator = UIImpactFeedbackGenerator(style: .light)
-//                          generator.impactOccurred()
                             updateLine(newLine, index)
                         }
                     
@@ -150,7 +148,7 @@ struct Markdown: View {
             return
         }
         
-        viewModel.updateLastModified()
+        viewModel.updateContent()
     }
     
     private func headerView(_ line: String) -> some View {

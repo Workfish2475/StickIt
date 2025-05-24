@@ -12,13 +12,16 @@ import SwiftUI
 
 fileprivate struct UITextViewWrapper: UIViewRepresentable {
     
-    @AppStorage("textColor") private var textColor: TextColor = .black
+    @AppStorage("textColor") private var textColor: TextColor = .system
+    @Environment(\.colorScheme) private var scheme
     
     typealias UIViewType = UITextView
 
     @Binding var text: String
     @Binding var selectedRange: NSRange
     @Binding var calculatedHeight: CGFloat
+    var color: Color
+    
     var inputAccessoryView: UIView?
     var onDone: (() -> Void)?
 
@@ -32,17 +35,24 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
         textView.isUserInteractionEnabled = true
         textView.isScrollEnabled = false
         textView.backgroundColor = UIColor.clear
+        
         if nil != onDone {
             textView.returnKeyType = .done
         }
         
-        if textColor == .black {
-            textView.textColor = .black
+        textView.inputAccessoryView = inputAccessoryView
+        
+        
+        if textColor == .system {
+            if scheme == .dark {
+                textView.textColor = .white
+            } else {
+                textView.textColor = .black
+            }
         } else {
-            textView.textColor = .white
+            textView.textColor = UIColor(textColor.color)
         }
         
-        textView.inputAccessoryView = inputAccessoryView
         textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return textView
     }
@@ -59,6 +69,8 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
         if textView.window != nil, !textView.isFirstResponder {
             textView.becomeFirstResponder()
         }
+        
+        textView.inputAccessoryView?.backgroundColor = UIColor(color).withAlphaComponent(0.7)
     }
 
     func makeCoordinator() -> Coordinator {
@@ -115,7 +127,8 @@ struct UIKitTextView: View {
 
     @Binding private var text: String
     @Binding private var selectedRange: NSRange
-
+    private var color: Color
+    
     private var internalText: Binding<String> {
         Binding<String>(get: { self.text } ) {
             self.text = $0
@@ -126,13 +139,15 @@ struct UIKitTextView: View {
     @State private var dynamicHeight: CGFloat = 500
     @State private var showingPlaceholder = false
 
-    init (_ placeholder: String = "", text: Binding<String>, selectedRange: Binding<NSRange>, onCommit: (() -> Void)? = nil, keyboardToolbar: AnyView? = nil) {
+    init (_ placeholder: String = "", text: Binding<String>, selectedRange: Binding<NSRange>, onCommit: (() -> Void)? = nil, keyboardToolbar: AnyView? = nil, color: Color) {
         self.placeholder = placeholder
         self._text = text
         self._selectedRange = selectedRange
         self.onCommit = onCommit
+        self.color = color
         self._showingPlaceholder = State<Bool>(initialValue: self.text.isEmpty)
         self.keyboardToolbar = keyboardToolbar
+        
     }
 
     var body: some View {
@@ -140,6 +155,7 @@ struct UIKitTextView: View {
             text: self.internalText,
             selectedRange: $selectedRange,
             calculatedHeight: $dynamicHeight,
+            color: color,
             inputAccessoryView: keyboardToolbar.map {
                 let hosting = UIHostingController(rootView: $0)
                 hosting.view.translatesAutoresizingMaskIntoConstraints = false

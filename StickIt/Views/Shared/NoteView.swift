@@ -37,6 +37,18 @@ struct NoteView: View {
         return Color(name: viewModel.noteColor)
     }
     
+    private var keyboardColor: Color {
+        if textColor == .system {
+            if scheme == .dark {
+                return .white
+            } else {
+                return .black
+            }
+        } else {
+            return textColor.color
+        }
+    }
+    
     var body: some View {
         GeometryReader { geo in
             ScrollView {
@@ -75,7 +87,6 @@ struct NoteView: View {
             }
             
             .onTapGesture {
-                dismissKeyboard()
                 viewModel.updateLastModified()
                 viewModel.saveNote(context)
             }
@@ -149,18 +160,6 @@ struct NoteView: View {
                         editingView
                     }
                 }
-                
-                ToolbarItem (placement: .keyboard) {
-                    Button {
-                        dismissKeyboard()
-                        viewModel.isEditing.toggle()
-                    } label: {
-                        Image(systemName: "arrow.down")
-                            .fontWeight(.bold)
-                    }
-                    
-                    .tint(textColor.color)
-                }
             }
         }
         
@@ -177,7 +176,7 @@ struct NoteView: View {
                 .onSubmit {
                     viewModel.updateTitle()
                 }
-            Text("Last modified \(viewModel.getDate()) at \(viewModel.getTime())")
+            Text("Last Modified \(viewModel.getDate()) at \(viewModel.getTime())")
                 .font(.caption.bold())
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -189,16 +188,11 @@ struct NoteView: View {
     private var editingView: some View {
         Button {
              viewModel.saveNote(context)
-             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
          } label: {
              Text("Done")
                  .foregroundStyle(textColor.color)
                  .fontWeight(.bold)
          }
-    }
-    
-    func dismissKeyboard() {
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
     
     var textEditingView: some View {
@@ -234,7 +228,8 @@ struct NoteView: View {
                 "",
                 text: $viewModel.contentField,
                 selectedRange: $selectedRange,
-                keyboardToolbar: keyboardToolbar.eraseToAnyView()
+                keyboardToolbar: keyboardToolbar.eraseToAnyView(),
+                color: viewColor
             )
             
             .padding()
@@ -319,7 +314,6 @@ struct NoteView: View {
             Spacer()
             
             Button {
-                dismissKeyboard()
                 viewModel.isEditing.toggle()
             } label: {
                 Image(systemName: "arrow.down")
@@ -327,7 +321,7 @@ struct NoteView: View {
             }
         }
         
-        .tint(viewColor)
+        .tint(keyboardColor)
         .padding(.horizontal)
     }
     
@@ -371,7 +365,8 @@ struct NoteView: View {
                             .fontWeight(.bold)
                     }
                     
-                    .foregroundStyle(textColor.color)
+                    .tint(viewColor)
+                    .foregroundStyle(keyboardColor)
                     .buttonStyle(.borderedProminent)
                 }
             }
