@@ -19,6 +19,7 @@ struct ContentView: View {
     
     @AppStorage("appearance") private var appearance: Appearance = .system
     @AppStorage("showingNew") private var showingNew: Bool = true
+    @AppStorage("appVersion") private var storedVersion: String = ""
     
     // MARK: - gets current device type (phone or pad)
     var currentDevice: UIUserInterfaceIdiom {
@@ -29,6 +30,7 @@ struct ContentView: View {
     NavigationStack {
         deviceView()
             .navigationTitle("StickIt")
+            .navigationBarTitleDisplayMode(.automatic)
             .toolbar {
                 ToolbarItem (placement: .topBarTrailing) {
                     Button {
@@ -45,7 +47,6 @@ struct ContentView: View {
         }
         
         .preferredColorScheme(appearance.colorScheme)
-        
         .sheet(isPresented: $showingSettings) {
             SettingsView()
         }
@@ -53,6 +54,14 @@ struct ContentView: View {
         .sheet(isPresented: $showingNew) {
             NavigationStack {
                 WhatsNew()
+            }
+        }
+        
+        .onAppear {
+            let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0"
+            if storedVersion != currentVersion {
+                storedVersion = currentVersion
+                showingNew = true
             }
         }
         
@@ -78,7 +87,6 @@ struct ContentView: View {
     }
     
     private func fetchNote(_ id: UUID) -> Note? {
-        
         var desc = FetchDescriptor<Note>()
         desc.predicate = #Predicate<Note> {
             $0.id == id
@@ -103,10 +111,14 @@ struct ContentView: View {
     let context = container.mainContext
 
     let sampleNotes = [
-        Note(name: "Shopping List", content: "# h1 Heading testing", color: ".red", isPinned: false, lastModified: .now),
-        Note(name: "Puppy", content: "testing testing testing", color: ".green", isPinned: true, lastModified: .now),
-        Note(name: "Work Progress", content: "testing testing testing", color: "orange", isPinned: false, lastModified: .now),
-        Note(name: "testing", content: "[ ] Something\n[ ] Another thing\n[ ] Last thing\n[ ] Done\n[ ] testing \n[ ] test", color: "red", isPinned: false, lastModified: .now),
+        Note(name: "Grocery List", content: "- Milk\n- Eggs\n- Bread\n- Spinach", color: "red", isPinned: false, lastModified: .now),
+        Note(name: "Workout Plan", content: "🏋️ Monday: Chest\n🏃 Tuesday: Cardio\n🧘 Wednesday: Yoga", color: "orange", isPinned: true, lastModified: .now),
+        Note(name: "Project Ideas", content: "- Habit Tracker app\n- SwiftUI Game\n- Markdown Notes", color: "green", isPinned: false, lastModified: .now),
+        Note(name: "Reading List", content: "- Atomic Habits\n- Clean Architecture\n- The Pragmatic Programmer", color: "blue", isPinned: false, lastModified: .now),
+        Note(name: "Work Tasks", content: "[ ] Fix bug #342\n[ ] Email John\n[ ] Review PRs", color: "gray", isPinned: true, lastModified: .now),
+        Note(name: "Vacation Plans", content: "✈️ Book flights to Tokyo\n🏨 Reserve hotel\n🗺️ Make itinerary", color: "yellow", isPinned: false, lastModified: .now),
+        Note(name: "Meeting Notes", content: "Discussed Q3 goals\nAssigned tasks to team\nFollow up on budget", color: "purple", isPinned: false, lastModified: .now),
+        Note(name: "Daily Journal", content: "Felt productive today.\nFocused well during deep work sessions.", color: "pink", isPinned: false, lastModified: .now),
     ]
 
     for note in sampleNotes {

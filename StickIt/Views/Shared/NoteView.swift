@@ -20,6 +20,8 @@ struct NoteView: View {
     @State private var selection: TextSelection? = nil
     @State private var selectedRange: NSRange = NSRange(location: 0, length: 0)
     @State private var showingHeaderView: Bool = false
+    @State private var showingAlert: Bool = false
+    
     @State private var viewModel: NoteViewModel = NoteViewModel()
     
     @AppStorage("textColor") private var textColor: TextColor = .black
@@ -56,7 +58,7 @@ struct NoteView: View {
                 
                 Group {
                     if viewModel.isEditing {
-                        textEditingViewPrototype
+                        textEditingView
                     } else {
                         markdownPresentation
                     }
@@ -67,6 +69,8 @@ struct NoteView: View {
                 .onTapGesture {
                     withAnimation {
                         viewModel.isEditing.toggle()
+                        selectedRange = NSRange(location: viewModel.contentField.count, length: 0)
+                        hasFocus = true
                     }
                 }
                 
@@ -197,33 +201,6 @@ struct NoteView: View {
     
     var textEditingView: some View {
         ScrollViewReader { proxy in
-            TextEditor(text: $viewModel.contentField, selection: $selection)
-                .focused($hasFocus)
-                .id("textEditor")
-                .tint(.white)
-                .font(.body)
-                .textEditorStyle(.plain)
-                .foregroundStyle(.white)
-                .submitLabel(.return)
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color(viewColor.opacity(0.8)))
-                )
-                .padding()
-                
-                .onSubmit {
-                    viewModel.updateContent()
-                }
-                
-                .onChange(of: viewModel.contentField.last) {
-                    proxy.scrollTo("textEditor", anchor: .bottom)
-                }
-        }
-    }
-    
-    var textEditingViewPrototype: some View {
-        ScrollViewReader { proxy in
             UIKitTextView(
                 "",
                 text: $viewModel.contentField,
@@ -232,6 +209,7 @@ struct NoteView: View {
                 color: viewColor
             )
             
+            .focused($hasFocus)
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 10)
@@ -260,52 +238,21 @@ struct NoteView: View {
             }
             
             Button {
-                let cursorLocation = selectedRange.location
-                if let stringIndex = viewModel.contentField.index(
-                    viewModel.contentField.startIndex,
-                    offsetBy: cursorLocation,
-                    limitedBy: viewModel.contentField.endIndex)
-                {
-                    let insertion = "\n[ ] "
-                    viewModel.contentField.insert(contentsOf: insertion, at: stringIndex)
-                    
-                    let newCursorLocation = cursorLocation + insertion.count
-                    selectedRange = NSRange(location: newCursorLocation, length: 0)
-                }
+                addContent("[ ] ")
             } label: {
                 Image(systemName: "checkmark")
                     .fontWeight(.bold)
             }
             
             Button {
-                let cursorLocation = selectedRange.location
-                if let stringIndex = viewModel.contentField.index(
-                    viewModel.contentField.startIndex,
-                    offsetBy: cursorLocation,
-                    limitedBy: viewModel.contentField.endIndex)
-                {
-                    let insertion = "\n```Code```"
-                    viewModel.contentField.insert(contentsOf: insertion, at: stringIndex)
-                    let newCursorLocation = cursorLocation + insertion.count - 3
-                    selectedRange = NSRange(location: newCursorLocation, length: 0)
-                }
+                addContent("```\t```")
             } label: {
                 Image(systemName: "chevron.left.forwardslash.chevron.right")
                     .fontWeight(.bold)
             }
             
             Button {
-                let cursorLocation = selectedRange.location
-                if let stringIndex = viewModel.contentField.index(
-                    viewModel.contentField.startIndex,
-                    offsetBy: cursorLocation,
-                    limitedBy: viewModel.contentField.endIndex)
-                {
-                    let insertion = "\n[]()"
-                    viewModel.contentField.insert(contentsOf: insertion, at: stringIndex)
-                    let newCursorLocation = cursorLocation + insertion.count - 3
-                    selectedRange = NSRange(location: newCursorLocation, length: 0)
-                }
+                addContent("[]()")
             } label: {
                 Image(systemName: "link")
                     .fontWeight(.bold)
@@ -321,7 +268,7 @@ struct NoteView: View {
             }
         }
         
-        .tint(keyboardColor)
+        .tint(scheme == .dark ? .white : .black)
         .padding(.horizontal)
     }
     
@@ -346,19 +293,8 @@ struct NoteView: View {
             HStack {
                 ForEach(1...4, id: \.self){ idx in
                     Button {
-                        let cursorLocation = selectedRange.location
-                        if let stringIndex = viewModel.contentField.index(
-                            viewModel.contentField.startIndex,
-                            offsetBy: cursorLocation,
-                            limitedBy: viewModel.contentField.endIndex)
-                        {
-                            let item = Array(repeating: "#", count: idx)
-                            let insertion = item.joined() + ""
-                            viewModel.contentField.insert(contentsOf: insertion, at: stringIndex)
-                            let newCursorLocation = cursorLocation + insertion.count
-                            selectedRange = NSRange(location: newCursorLocation, length: 0)
-                        }
-                        
+                        let item = Array(repeating: "#", count: idx).joined() + " "
+                        addContent(item)
                         showingHeaderView.toggle()
                     } label: {
                         Text("\(idx)")
@@ -366,7 +302,7 @@ struct NoteView: View {
                     }
                     
                     .tint(viewColor)
-                    .foregroundStyle(keyboardColor)
+                    .foregroundStyle(.white)
                     .buttonStyle(.borderedProminent)
                 }
             }
@@ -378,10 +314,10 @@ struct NoteView: View {
         if let stringIndex = viewModel.contentField.index(
             viewModel.contentField.startIndex,
             offsetBy: cursorLocation,
-            limitedBy: viewModel.contentField.endIndex)
-        {
+            limitedBy: viewModel.contentField.endIndex
+        ) {
             viewModel.contentField.insert(contentsOf: content, at: stringIndex)
-            let newCursorLocation = cursorLocation + content.count - 3
+            let newCursorLocation = cursorLocation + content.count
             selectedRange = NSRange(location: newCursorLocation, length: 0)
         }
     }

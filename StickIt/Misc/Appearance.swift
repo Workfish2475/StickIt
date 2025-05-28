@@ -47,6 +47,7 @@ struct AppearancePicker: View {
                 }
             }
         }
+        
         .navigationTitle("Theme")
         .listStyle(.insetGrouped)
         .preferredColorScheme(appearance.colorScheme == .none ? scheme : appearance.colorScheme)

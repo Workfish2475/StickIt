@@ -27,7 +27,6 @@ struct FlowLayout: Layout {
     }
 }
 
-
 enum FlowAlignment {
     case leading, center, trailing
 }

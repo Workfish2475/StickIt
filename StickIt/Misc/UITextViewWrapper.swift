@@ -40,8 +40,33 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
             textView.returnKeyType = .done
         }
         
-        textView.inputAccessoryView = inputAccessoryView
-        
+        if let inputAccessoryContent = inputAccessoryView {
+            let container = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 45))
+            container.backgroundColor = .clear
+
+            let blurEffect = UIBlurEffect(style: .systemThinMaterial)
+            let blurView = UIVisualEffectView(effect: blurEffect)
+            blurView.translatesAutoresizingMaskIntoConstraints = false
+            container.addSubview(blurView)
+
+            inputAccessoryContent.translatesAutoresizingMaskIntoConstraints = false
+            inputAccessoryContent.backgroundColor = .clear
+            container.addSubview(inputAccessoryContent)
+
+            NSLayoutConstraint.activate([
+                blurView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+                blurView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+                blurView.topAnchor.constraint(equalTo: container.topAnchor),
+                blurView.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+                
+                inputAccessoryContent.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+                inputAccessoryContent.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+                inputAccessoryContent.topAnchor.constraint(equalTo: container.topAnchor),
+                inputAccessoryContent.bottomAnchor.constraint(equalTo: container.bottomAnchor)
+            ])
+
+            textView.inputAccessoryView = container
+        }
         
         if textColor == .system {
             if scheme == .dark {
@@ -70,7 +95,7 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
             textView.becomeFirstResponder()
         }
         
-        textView.inputAccessoryView?.backgroundColor = UIColor(color).withAlphaComponent(0.7)
+//        textView.inputAccessoryView?.backgroundColor = UIColor(color)
     }
 
     func makeCoordinator() -> Coordinator {

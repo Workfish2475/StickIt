@@ -51,7 +51,7 @@ struct NoteItem: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .background(
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(name: noteItem.color).opacity(0.8))
+                    .fill(Color(name: noteItem.color).opacity(0.7))
             )
         }
         

@@ -72,9 +72,11 @@ struct iPhoneView: View {
                 .resizable()
                 .zIndex(1)
                 .frame(width: 45, height: 45)
+                .background(Material.ultraThin)
+                .clipShape(Circle())
                 .padding()
                 .frame(alignment: .bottomTrailing)
-                .shadow(color: Color.primary.opacity(0.1), radius: 9, x: 0, y: 5)
+                .shadow(color: .gray.opacity(0.3), radius: 9, x: 0, y: 5)
         }
     }
     

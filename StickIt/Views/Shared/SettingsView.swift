@@ -29,6 +29,10 @@ struct SettingsView: View {
                     NavigationLink(destination: TipView()) {
                         Label("Tip", systemImage: "dollarsign")
                     }
+                    
+                    NavigationLink(destination: TipView()) {
+                        Label("Subscription", systemImage: "lock")
+                    }
                 }
                 
                 Section("Help") {
@@ -45,6 +49,7 @@ struct SettingsView: View {
                     }
                 }
             }
+            
             .navigationTitle("Settings")
             .toolbar {
                 ToolbarItem (placement:.topBarTrailing) {
@@ -141,7 +146,6 @@ struct WhatsNew: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
-
 
 #Preview ("Settings") {
     SettingsView()

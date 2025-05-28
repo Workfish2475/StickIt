@@ -71,8 +71,11 @@ struct iPadView: View {
                 .resizable()
                 .zIndex(1)
                 .frame(width: 45, height: 45)
+                .background(Material.ultraThin)
+                .clipShape(Circle())
                 .padding()
                 .frame(alignment: .bottomTrailing)
+                .shadow(color: .gray.opacity(0.3), radius: 9, x: 0, y: 5)
         }
     }
     
@@ -87,11 +90,14 @@ struct iPadView: View {
                     NavigationLink(value: note) {
                         NoteItem(noteItem: note)
                             .matchedTransitionSource(id: note.persistentModelID, in: namespace)
-                            .frame(width: 275, height: 200)
+                            .frame(minWidth: 250, maxWidth: .infinity)
+                            .frame(height: 200)
                             .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 1)
+                            .layoutPriority(1)
                     }
                 }
             }
+            
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding()

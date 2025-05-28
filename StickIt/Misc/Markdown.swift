@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-//TODO: Work on regex rule for detecting links in markdown format
 struct Markdown: View {
     
     @Binding var markdownText: String
