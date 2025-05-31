@@ -15,7 +15,6 @@ struct NotesView: View {
     @Environment(\.modelContext) private var context
     
     @State private var viewModel: NoteViewModel = NoteViewModel()
-    
     @State private var updatingTitle: Bool = false
     
     @Namespace private var animation
@@ -38,12 +37,14 @@ struct NotesView: View {
     }
     
     var body: some View {
-        GeometryReader { geo in
+        ScrollView (.vertical) {
             VStack (spacing: 0) {
+                Spacer()
+                    .frame(height: 120)
+                
                 if viewModel.isEditing {
                     textEditingView
                         .frame(maxWidth: .infinity)
-                    
                 } else {
                     markdownView
                         .onTapGesture {
@@ -56,34 +57,41 @@ struct NotesView: View {
                 Spacer()
             }
             
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .containerRelativeFrame(.vertical)
         }
         
-//        .navigationTitle("\(viewModel.titleField)")
-//        .navigationSubtitle("last Modified \(getTimeString)")
-//        .toolbarTitleDisplayMode(.inlineLarge)
+        .ignoresSafeArea(edges: .top)
         
-        .toolbar(removing: .title)
-        .background(noteColor.opacity(0.6))
-        .toolbar {
-            ToolbarItemGroup (placement: .navigation) {
-                VStack (alignment: .leading , spacing: 1) {
-                    Text("\(viewModel.titleField)")
-                        .font(.headline)
-                    Text("Last Modified \(getTimeString)")
-                        .font(.subheadline)
+        .safeAreaInset(edge: .top) {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 0) {
+                        TextField("Title", text: $viewModel.titleField)
+                            .font(.title3.bold())
+                            .textFieldStyle(.plain)
+                        Text("Last Modified \(getTimeString)")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    
+                    Spacer()
+                    
+                    previewTools
+                        .buttonStyle(.borderless)
                 }
-            }
-            
-            ToolbarItemGroup (placement: .primaryAction) {
-                previewTools
                 
+                Divider()
+                
+                editingTools
+                    .buttonStyle(.bordered)
             }
             
-            ToolbarItemGroup (placement: .secondaryAction) {
-                editingTools
-            }
+            .padding()
+            .background(.regularMaterial)
+            .ignoresSafeArea(edges: .top)
         }
+        
+        .background(noteColor.opacity(0.5))
         
         .sheet(isPresented: $updatingTitle) {
             TextField(viewModel.titleField, text: $viewModel.titleField)
@@ -92,7 +100,7 @@ struct NotesView: View {
     }
     
     private var previewTools: some View {
-        HStack {
+        HStack (alignment: .center) {
             Picker("", selection: $viewModel.noteColor) {
                 ForEach(Color.namedColors, id: \.name) { namedColor in
                     Text(namedColor.name.capitalized)
@@ -105,30 +113,36 @@ struct NotesView: View {
                 openWindow(value: viewModel.noteItem!)
             } label: {
                 Label(viewModel.isPinned ? "Unpin" : "Pin", systemImage: "pin.fill")
-                    .labelStyle(.iconOnly)
             }
             
             .disabled(viewModel.noteItem == nil)
             .help("Pin/Unpin")
             
-            Button {
+            Divider()
+                .frame(height: 10)
+            
+            Button (role: .destructive) {
                 viewModel.deleteNote(context)
             } label: {
-                Label("Trash", systemImage: "trash.fill")
-                    .labelStyle(.iconOnly)
+                Label("Trash", systemImage: "trash")
+                    .fontWeight(.bold)
             }
             
             .disabled(viewModel.noteItem == nil)
             .help("Delete Note")
             
-            Button {
-                viewModel.saveNote(context)
-            } label: {
-                Label("Done", systemImage: "checkmark.circle.fill")
-                    .labelStyle(.iconOnly)
+            if viewModel.isEditing {
+                Button {
+                    withAnimation {
+                        viewModel.saveNote(context)
+                    }
+                } label: {
+                    Label("Done", systemImage: "checkmark")
+                        .fontWeight(.bold)
+                }
+                
+                .help("Save note changes")
             }
-            
-            .help("Save note changes")
         }
     }
     
@@ -137,9 +151,8 @@ struct NotesView: View {
             Button {
                 
             } label: {
-                Label("Heading", systemImage: "h.square.fill")
-                    .font(.headline)
-                    .labelStyle(.iconOnly)
+                Label("Heading", systemImage: "textformat")
+                    
             }
             
             .help("Heading")
@@ -147,9 +160,7 @@ struct NotesView: View {
             Button {
                 
             } label: {
-                Label("Code Block", systemImage: "hammer.fill")
-                    .font(.headline)
-                    .labelStyle(.iconOnly)
+                Label("Code Block", systemImage: "hammer")
             }
             
             .help("Code Block")
@@ -158,8 +169,6 @@ struct NotesView: View {
                 
             } label: {
                 Label("Link", systemImage: "link")
-                    .font(.headline)
-                    .labelStyle(.iconOnly)
             }
             
             .help("Link")
@@ -167,9 +176,7 @@ struct NotesView: View {
             Button {
                 
             } label: {
-                Label("Checkbox", systemImage: "checkmark.square.fill")
-                    .font(.headline)
-                    .labelStyle(.iconOnly)
+                Label("Checkbox", systemImage: "checkmark.square")
             }
             
             .help("Checkbox")
@@ -238,5 +245,6 @@ struct TitleEditView: View {
 
 #Preview {
     NotesView(noteItem: .placeholder)
-        .frame(minWidth: 400, idealWidth: 800, minHeight: 400, idealHeight: 800)
+        .frame(minWidth: 450, idealWidth: 800, minHeight: 400, idealHeight: 800)
+        .padding(.top)
 }

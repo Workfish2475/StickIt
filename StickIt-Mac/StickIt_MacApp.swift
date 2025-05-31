@@ -14,10 +14,10 @@ struct StickIt_MacApp: App {
         WindowGroup {
             ContentView()
                 .modelContainer(for: [Note.self])
-                .frame(minWidth: 400, idealWidth: 600, minHeight: 450, idealHeight: 800)
+                .frame(minWidth: 450, idealWidth: 600, minHeight: 450, idealHeight: 800) 
         }
+        .windowStyle(.hiddenTitleBar)
       
-        
         WindowGroup("Note View", for: Note.self) { $note in
             if let unwrappedNote = note {
                 StickyView(noteItem: unwrappedNote)

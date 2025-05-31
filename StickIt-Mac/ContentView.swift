@@ -22,26 +22,40 @@ struct ContentView: View {
     
     var body: some View {
         NavigationSplitView {
-            List (selection: $selectedNote) {
-                Section ("Notes") {
-                    ForEach(notes, id: \.persistentModelID) {note in
-                        NavigationLink("\(note.name)", value: note)
+            ZStack {
+                VisualEffectView(
+                    material: .hudWindow,
+                    blendingMode: .behindWindow,
+                    emphasized: true,
+                    alphaValue: 0.9
+                )
+                .ignoresSafeArea()
+                
+                List (selection: $selectedNote) {
+                    Section ("Notes") {
+                        ForEach(notes, id: \.persistentModelID) {note in
+                            NavigationLink("\(note.name)", value: note)
+                        }
                     }
                 }
+                
+                .scrollContentBackground(.hidden)
+                .toolbar(removing: .sidebarToggle)
+            }
+            
+            .safeAreaInset(edge: .bottom){
+                Button {
+                    addingNote = true
+                    selectedNote = nil
+                } label: {
+                    Label("New Task", systemImage: "plus")
+                }
+                
+                .padding()
             }
             
             .navigationTitle("Notes")
             .navigationSplitViewColumnWidth(min: 150, ideal: 175)
-            .toolbar {
-                ToolbarItem {
-                    Button {
-                        addingNote = true
-                        selectedNote = nil
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-                }
-            }
             
         } detail: {
             if (addingNote) {
@@ -51,65 +65,20 @@ struct ContentView: View {
                 NotesView(noteItem: selectedNote)
                     .id(selectedNote.id)
             } else {
-                Text("Select a note to view")
-                    .onTapGesture {
-                        addingNote.toggle()
-                    }
+                ContentUnavailableView {
+                    Label("Select a note", systemImage: "note.text")
+                } description: {
+                    Text("Or wait for iCloud to finish syncing")
+                }
+                
+                .onTapGesture {
+                    addingNote.toggle()
+                }
             }
         }
         
-        .navigationTitle("StickIt")
         .onChange(of: selectedNote) {
             addingNote = false
-        }
-    }
-}
-
-// MARK: - Test AppKit implementation
-struct MyAppKitView: NSViewRepresentable {
-    func makeNSView(context: Context) -> NSView {
-        let myView = NSView()
-        myView.wantsLayer = true
-        myView.layer?.backgroundColor = NSColor.red.cgColor
-
-        DispatchQueue.main.async {
-            if let window = myView.window {
-                let toolbar = NSToolbar(identifier: "MyToolbar")
-                toolbar.delegate = context.coordinator
-                window.toolbar = toolbar
-            }
-        }
-
-        return myView
-    }
-
-    // Read docs for this function
-    func updateNSView(_ nsView: NSView, context: Context) {
-        // You could update the toolbar here if needed
-    }
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator()
-    }
-
-    class Coordinator: NSObject, NSToolbarDelegate {
-        func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-            return [.toggleSidebar, .flexibleSpace]
-        }
-
-        func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-            return [.toggleSidebar, .showColors]
-        }
-
-        func toolbar(_ toolbar: NSToolbar, itemForItemIdentifier itemIdentifier: NSToolbarItem.Identifier, willBeInsertedIntoToolbar flag: Bool) -> NSToolbarItem? {
-            let item = NSToolbarItem(itemIdentifier: itemIdentifier)
-            
-            return item
-        }
-
-        //Need to implement action here.
-        @objc func toggleAction() {
-            print("Toggle toolbar item tapped")
         }
     }
 }
@@ -120,8 +89,28 @@ struct ContentView_Previews : PreviewProvider {
     }
 }
 
-struct MyAppKitView_Previews : PreviewProvider {
-    static var previews: some View {
-        MyAppKitView()
+struct VisualEffectView: NSViewRepresentable {
+    var material: NSVisualEffectView.Material
+    var blendingMode: NSVisualEffectView.BlendingMode
+    var state: NSVisualEffectView.State = .active
+    var emphasized: Bool = false
+    var alphaValue: CGFloat = 1.0
+    
+    func makeNSView(context: Context) -> NSVisualEffectView {
+        let view = NSVisualEffectView()
+        view.material = material
+        view.blendingMode = blendingMode
+        view.state = state
+        view.isEmphasized = emphasized
+        view.alphaValue = alphaValue
+        return view
+    }
+    
+    func updateNSView(_ nsView: NSVisualEffectView, context: Context) {
+        nsView.material = material
+        nsView.blendingMode = blendingMode
+        nsView.state = state
+        nsView.isEmphasized = emphasized
+        nsView.alphaValue = alphaValue
     }
 }
