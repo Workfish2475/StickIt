@@ -143,7 +143,28 @@ class NoteViewModel {
         }
     }
     
-    func syncChangess() {
-        
+    // Fetches the most updated version of the note from iCloud.
+    func syncChanges(_ context: ModelContext) {
+        if let existingNote = noteItem {
+            let noteID = existingNote.id
+            let descriptor = FetchDescriptor<Note>(predicate: #Predicate { $0.id == noteID })
+            
+            do {
+                let newNote = try context.fetch(descriptor).first
+                
+                if newNote?.lastModified == existingNote.lastModified {
+                    return
+                }
+                
+                guard let newNote = newNote else {
+                    print("No updated note found for ID: \(noteID)")
+                    return
+                }
+                
+                setNote(newNote)
+            } catch {
+                print("error fetching note: \(error)")
+            }
+        }
     }
 }

@@ -12,6 +12,7 @@ struct NotesView: View {
     var noteItem: Note? = nil
     
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.dismissWindow) private var closeWindow
     @Environment(\.modelContext) private var context
     
     @State private var viewModel: NoteViewModel = NoteViewModel()
@@ -109,8 +110,7 @@ struct NotesView: View {
             }
             
             Button {
-                viewModel.updatePinned()
-                openWindow(value: viewModel.noteItem!)
+                manageWindow()
             } label: {
                 Label(viewModel.isPinned ? "Unpin" : "Pin", systemImage: "pin.fill")
             }
@@ -149,16 +149,15 @@ struct NotesView: View {
     private var editingTools: some View {
         HStack {
             Button {
-                
+                addContent("#")
             } label: {
                 Label("Heading", systemImage: "textformat")
-                    
             }
             
             .help("Heading")
             
             Button {
-                
+                addContent("```\t```")
             } label: {
                 Label("Code Block", systemImage: "hammer")
             }
@@ -166,7 +165,7 @@ struct NotesView: View {
             .help("Code Block")
             
             Button {
-                
+                addContent("[]()")
             } label: {
                 Label("Link", systemImage: "link")
             }
@@ -174,7 +173,7 @@ struct NotesView: View {
             .help("Link")
             
             Button {
-                
+                addContent("[ ]")
             } label: {
                 Label("Checkbox", systemImage: "checkmark.square")
             }
@@ -229,7 +228,21 @@ struct NotesView: View {
     
     // MARK: - Open a new window if not open, or close if already open.
     private func manageWindow() -> Void {
+        viewModel.updatePinned()
         
+        guard let noteItem = viewModel.noteItem else {
+            return
+        }
+        
+        if viewModel.isPinned {
+            openWindow(value: noteItem)
+        } else {
+            closeWindow(value: noteItem)
+        }
+    }
+    
+    private func addContent(_ content: String) -> Void {
+        viewModel.contentField.append(contentsOf: content)
     }
 }
 

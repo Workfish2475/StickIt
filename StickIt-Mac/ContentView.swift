@@ -32,8 +32,17 @@ struct ContentView: View {
                 .ignoresSafeArea()
                 
                 List (selection: $selectedNote) {
+                    Section ("Pinned") {
+                        ForEach(notes.filter({ $0.isPinned })) { note in
+                            NavigationLink("\(note.name)", value: note)
+                                .onAppear() {
+                                    openPinnedWindow(note)
+                                }
+                        }
+                    }
+                    
                     Section ("Notes") {
-                        ForEach(notes, id: \.persistentModelID) {note in
+                        ForEach(notes.filter({ !$0.isPinned }), id: \.persistentModelID) {note in
                             NavigationLink("\(note.name)", value: note)
                         }
                     }
@@ -45,8 +54,8 @@ struct ContentView: View {
             
             .safeAreaInset(edge: .bottom){
                 Button {
-                    addingNote = true
                     selectedNote = nil
+                    addingNote = true
                 } label: {
                     Label("New Task", systemImage: "plus")
                 }
@@ -67,8 +76,6 @@ struct ContentView: View {
             } else {
                 ContentUnavailableView {
                     Label("Select a note", systemImage: "note.text")
-                } description: {
-                    Text("Or wait for iCloud to finish syncing")
                 }
                 
                 .onTapGesture {
@@ -80,6 +87,24 @@ struct ContentView: View {
         .onChange(of: selectedNote) {
             addingNote = false
         }
+    }
+    
+    private func openPinnedWindow(_ noteItem: Note) {
+        if isWindowAlreadyOpen(noteTitle: noteItem.name) {
+            return
+        }
+        
+        openWindow(value: noteItem)
+    }
+    
+    func isWindowAlreadyOpen(noteTitle: String) -> Bool {
+        let windows = NSApplication.shared.windows
+        
+        if windows.contains(where: {$0.title == noteTitle}) {
+            return true
+        }
+        
+        return false
     }
 }
 

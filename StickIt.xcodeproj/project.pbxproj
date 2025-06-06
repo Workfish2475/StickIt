@@ -74,6 +74,7 @@
 		1136F5612DAB3AB200B18344 /* StickIt - Sticky Notes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "StickIt - Sticky Notes.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1136F5702DAB3AB400B18344 /* StickIt-MacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "StickIt-MacTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1136F57A2DAB3AB400B18344 /* StickIt-MacUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "StickIt-MacUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1164034D2DF2057D003AA5B9 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
 		11AE6A232DB6DFF8004A1E01 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		11AE6A292DB70A1B004A1E01 /* StickIt - Sticky Notes.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = "StickIt - Sticky Notes.storekit"; sourceTree = "<group>"; };
 		11D354A22DADCC5700514154 /* StickIt-WidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "StickIt-WidgetExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -288,6 +289,7 @@
 				11AE6A232DB6DFF8004A1E01 /* StoreKit.framework */,
 				11D354A42DADCC5700514154 /* WidgetKit.framework */,
 				11D354A62DADCC5700514154 /* SwiftUI.framework */,
+				1164034D2DF2057D003AA5B9 /* Intents.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -463,7 +465,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1630;
+				LastSwiftUpdateCheck = 1640;
 				LastUpgradeCheck = 1630;
 				TargetAttributes = {
 					1136F4882DAB337200B18344 = {

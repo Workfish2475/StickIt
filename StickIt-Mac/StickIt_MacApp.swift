@@ -28,7 +28,23 @@ struct StickIt_MacApp: App {
         }
         
         .defaultSize(CGSize(width: 250, height: 225))
+        .windowResizability(.contentMinSize)
         .windowStyle(.hiddenTitleBar)
         .windowLevel(.floating)
+        
+        Settings {
+            Text("Something")
+        }
+    }
+}
+
+struct SettingsView: View {
+    
+    @State private var selection: Int = 0
+    
+    var body: some View {
+        TabView(selection: $selection) {
+            
+        }
     }
 }

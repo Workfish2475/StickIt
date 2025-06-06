@@ -59,9 +59,23 @@ class Note: Codable {
     }
     
     static let placeholder: Note = Note(
-        name: "Sample Note",
-        content: "#### Things to do \n[ ] something \n[ ] something \n### Code \n```private func something() {}```\n[google](https://www.google.com)\n# Something something to do would be nice \n shit",
-        color: "orange",
+        name: "Demo Note",
+        content: """
+            ## 📝 Things to Do
+            [ ] Finish writing the proposal  
+            [x] Buy groceries  
+            [ ] Schedule meeting with team
+            
+            ## 🔗 Useful Link
+            [Google](https://www.google.com)
+
+            ## 💻 Code Snippet
+            ```private func greet(name: String) {}```
+
+            ## 🧠 Notes
+            Remember to keep notes clear and organized. Use Markdown to highlight code, tasks, and references effectively.
+            """,
+        color: "indigo",
         isPinned: false,
         lastModified: Date.distantPast
     )

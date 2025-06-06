@@ -8,7 +8,6 @@
 import SwiftUI
 import SwiftData
 
-//TODO: Needs to also write to the note on change
 struct StickyView: View {
     
     var noteItem: Note
@@ -17,9 +16,7 @@ struct StickyView: View {
     
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
-    
-    // MARK: - Trying to get it to fetch on focus of window
-    @Environment(\.scenePhase) private var schene
+    @Environment(\.scenePhase) private var scene
     
     init(noteItem: Note) {
         self.noteItem = noteItem
@@ -42,11 +39,12 @@ struct StickyView: View {
                 
                 ScrollView (showsIndicators: false) {
                     contentArea()
-                        .onTapGesture {
-                            withAnimation {
-                                viewModel.isEditing.toggle()
-                            }
-                        }
+                }
+                
+                .onTapGesture {
+                    withAnimation {
+                        viewModel.isEditing.toggle()
+                    }
                 }
                 
                 .padding()
@@ -61,11 +59,12 @@ struct StickyView: View {
             )
         }
         
-        .onChange(of: context) {
-            try? context.save()
+        .onChange(of: scene) {
+            if scene == .active {
+                viewModel.syncChanges(context)
+            }
         }
 
-        
         .onAppear {
             DispatchQueue.main.async {
                 if let window = NSApplication.shared.windows.first(where: { $0.title == noteItem.name }) {
@@ -118,6 +117,10 @@ struct StickyView: View {
             TextField("", text: $viewModel.titleField)
                 .textFieldStyle(.plain)
                 .font(.title3.bold())
+                .onSubmit {
+                    viewModel.updateLastModified()
+                    viewModel.syncChanges(context)
+                }
             
             Text("Last modified \(viewModel.getDate()) at \(viewModel.getTime())")
                 .font(.caption)
@@ -133,6 +136,9 @@ struct StickyView: View {
             editingView
         } else {
             markdownView
+                .onDisappear() {
+                    viewModel.syncChanges(context)
+                }
         }
     }
     

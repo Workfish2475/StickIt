@@ -9,11 +9,11 @@ import WidgetKit
 import AppIntents
 import SwiftData
 
-struct ConfigurationAppIntent: WidgetConfigurationIntent {
+struct SelectedNote: WidgetConfigurationIntent {
     static var title: LocalizedStringResource = "StickIt-Widget"
     static var description: IntentDescription = IntentDescription("Select a note to display")
 
-    @Parameter(title: "Selected Note")
+    @Parameter(title: "Note")
     var noteItem: Note?
 }
 
