@@ -29,10 +29,6 @@ struct SettingsView: View {
                     NavigationLink(destination: TipView()) {
                         Label("Tip", systemImage: "dollarsign")
                     }
-                    
-                    NavigationLink(destination: TipView()) {
-                        Label("Subscription", systemImage: "lock")
-                    }
                 }
                 
                 Section("Help") {

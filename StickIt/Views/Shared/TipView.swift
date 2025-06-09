@@ -16,6 +16,7 @@ struct TipView: View {
             List {
                 ForEach (productIDs.indices, id: \.self) { index in
                     ProductView(id: productIDs[index])
+                        .productViewStyle(.compact)
                 }
             }
         }

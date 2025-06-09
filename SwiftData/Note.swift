@@ -70,7 +70,9 @@ class Note: Codable {
             [Google](https://www.google.com)
 
             ## 💻 Code Snippet
-            ```private func greet(name: String) {}```
+            ```private func greet(name: String) {
+                Console.log("Hello World!);
+            }```
 
             ## 🧠 Notes
             Remember to keep notes clear and organized. Use Markdown to highlight code, tasks, and references effectively.
