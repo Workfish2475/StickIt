@@ -55,15 +55,23 @@ struct SimpleEntry: TimelineEntry {
     let config: SelectedNote
 }
 
-struct PlaceholderView: View {
-    var body: some View {
-        Text("Placeholder")
-    }
-}
-
 struct StickIt_WidgetEntryView: View {
     var entry: NoteProvider.Entry
-
+    
+    private var noteItem: Note?
+    @State private var text: String
+    
+    init(entry: NoteProvider.Entry, noteItem: Note? = nil) {
+        self.entry = entry
+        
+        guard let noteItem = entry.config.noteItem else {
+            _text = State(initialValue: "")
+            return
+        }
+        
+        _text = State(initialValue: String(noteItem.content.prefix(175)))
+    }
+   
     var body: some View {
         GeometryReader { geo in
             VStack(alignment: .leading) {
@@ -73,7 +81,7 @@ struct StickIt_WidgetEntryView: View {
                     RoundedRectangle(cornerRadius: 10)
                         .fill(Color(name: entry.config.noteItem!.color))
 
-                    Markdown(markdownText: .constant("\(String(describing: entry.config.noteItem!.content))"), limit: false)
+                    MarkdownRenderer(input: $text, compactMode: true)
                         .padding()
                 }
                 
@@ -92,14 +100,16 @@ struct StickIt_WidgetEntryView: View {
     
     @ViewBuilder
     func headerView() -> some View {
-        Text("\(entry.config.noteItem!.name)")
-            .font(.headline)
-            .frame(maxWidth: .infinity, alignment: .leading)
-        
-        Text("Last modified \(entry.date.formatted(.dateTime.hour().minute()))")
-            .font(.caption)
-            .foregroundStyle(.secondary)
-            .frame(maxWidth: .infinity, alignment: .leading)
+        VStack {
+            Text("\(entry.config.noteItem!.name)")
+                .font(.headline)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            Text("Last modified \(entry.date.formatted(.dateTime.hour().minute()))")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
     }
 }
 
@@ -118,7 +128,7 @@ struct StickIt_Widget: Widget {
         
         .configurationDisplayName("Sticky Note")
         .description("Sticky notes for your home screen.")
-        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge, .systemExtraLarge])
+        .supportedFamilies([.systemMedium, .systemLarge, .systemExtraLarge])
     }
 }
 
@@ -130,7 +140,7 @@ extension SelectedNote {
     }
 }
 
-#Preview(as: .systemExtraLarge) {
+#Preview(as: .systemLarge) {
     StickIt_Widget()
 } timeline: {
     SimpleEntry(date: Date(), config: .demo)

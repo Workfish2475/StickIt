@@ -84,6 +84,48 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		1104A9242DFB8B5B005FCD0C /* Exceptions for "StickIt" folder in "StickItTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models/NoteViewModel.swift,
+			);
+			target = 1136F4992DAB337400B18344 /* StickItTests */;
+		};
+		1104A9252DFB8B5B005FCD0C /* Exceptions for "StickIt" folder in "StickItUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models/NoteViewModel.swift,
+			);
+			target = 1136F4A32DAB337400B18344 /* StickItUITests */;
+		};
+		1104A92A2DFB8CA5005FCD0C /* Exceptions for "SwiftData" folder in "StickItTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Note.swift,
+			);
+			target = 1136F4992DAB337400B18344 /* StickItTests */;
+		};
+		1104A92B2DFB8CA5005FCD0C /* Exceptions for "SwiftData" folder in "StickItUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Note.swift,
+			);
+			target = 1136F4A32DAB337400B18344 /* StickItUITests */;
+		};
+		1104A92C2DFB8CA5005FCD0C /* Exceptions for "SwiftData" folder in "StickIt-MacTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Note.swift,
+			);
+			target = 1136F56F2DAB3AB400B18344 /* StickIt-MacTests */;
+		};
+		1104A92D2DFB8CA5005FCD0C /* Exceptions for "SwiftData" folder in "StickIt-MacUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Note.swift,
+			);
+			target = 1136F5792DAB3AB400B18344 /* StickIt-MacUITests */;
+		};
 		1136F4AC2DAB337400B18344 /* Exceptions for "StickIt" folder in "StickIt" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -144,6 +186,8 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				1136F4AC2DAB337400B18344 /* Exceptions for "StickIt" folder in "StickIt" target */,
+				1104A9242DFB8B5B005FCD0C /* Exceptions for "StickIt" folder in "StickItTests" target */,
+				1104A9252DFB8B5B005FCD0C /* Exceptions for "StickIt" folder in "StickItUITests" target */,
 				1136F58E2DAB3E8800B18344 /* Exceptions for "StickIt" folder in "StickIt - Sticky Notes" target */,
 				11D354BE2DAF10FC00514154 /* Exceptions for "StickIt" folder in "StickIt-WidgetExtension" target */,
 			);
@@ -163,7 +207,11 @@
 		1136F4BB2DAB342C00B18344 /* SwiftData */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+				1104A92A2DFB8CA5005FCD0C /* Exceptions for "SwiftData" folder in "StickItTests" target */,
+				1104A92B2DFB8CA5005FCD0C /* Exceptions for "SwiftData" folder in "StickItUITests" target */,
 				1136F58C2DAB3B9300B18344 /* Exceptions for "SwiftData" folder in "StickIt - Sticky Notes" target */,
+				1104A92C2DFB8CA5005FCD0C /* Exceptions for "SwiftData" folder in "StickIt-MacTests" target */,
+				1104A92D2DFB8CA5005FCD0C /* Exceptions for "SwiftData" folder in "StickIt-MacUITests" target */,
 				11D354BC2DAECC3300514154 /* Exceptions for "SwiftData" folder in "StickIt-WidgetExtension" target */,
 			);
 			path = SwiftData;

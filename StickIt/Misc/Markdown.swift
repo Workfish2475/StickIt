@@ -216,7 +216,7 @@ struct Parser {
     let headerPattern = try! Regex("^(#+)\\s+")
     let checkboxPattern = try! Regex("^\\[( |x)\\]")
     
-    /// TODO: Could probably implement a better regex rule for detecting multiple lines of code.
+    // TODO: Could probably implement a better regex rule for detecting multiple lines of code.
     let codeBlockPattern = try! Regex("^```[a-zA-Z]*")
     let linkPattern = try! Regex("\\[.*?\\]\\(.*?\\)")
     
@@ -228,6 +228,7 @@ struct Parser {
     /// parses the input string into an array of MarkdownNodes depending on what rules are satisfied.
     ///
     /// - Parameter input: A string containing markdown formatted text to be processed
+    /// - Returns: returns an array of MarkdownNode
     ///
     func parse(_ input: String) -> [MarkdownNode] {
         var result: [MarkdownNode] = []
@@ -242,24 +243,36 @@ struct Parser {
             if currentLineType == .codeBlock {
                 /// Check if we're at the end of the code block and reset strContent and currentLineType or append if not.
                 if trimmed.contains("```") {
+                    strContent.append(line)
                     result.append(MarkdownNode(type: .codeBlock, content: strContent))
                     strContent.removeAll()
                     currentLineType = .unknown
-                    
                 } else {
                     strContent.append(line + "\n")
                 }
                 
             } else {
                 
-                if line.hasPrefix("```") {
+                if line.contains("```") {
+                    
+                    currentLineType = .codeBlock
+                    strContent.append(line + "\n")
+                    
+                    if line.hasPrefix("```") {
+                        continue
+                    }
+                    
+                    if line.hasSuffix("```") {
+                        result.append(MarkdownNode(type: .codeBlock, content: strContent))
+                    }
+                    
                     /// Single line code block that we insert and move on from without setting currentLineType to .codeBlock
                     if line.hasSuffix("```") {
                         result.append(MarkdownNode(type: .codeBlock, content: line))
                     } else {
-                        currentLineType = .codeBlock
                         strContent.append(line + "\n")
                     }
+                    
                 } else if line.firstMatch(of: headerPattern) != nil {
                     let headerLevel = line.prefix(while: {$0 == "#"}).count
                     result.append(MarkdownNode(type: .header(headerLevel), content: line))
@@ -271,10 +284,15 @@ struct Parser {
                     let (_, displayText, urlText) = match.output
                     result.append(MarkdownNode(type: .link(text: String(displayText), url: String(urlText)), content: line))
                 } else {
-                    result.append(MarkdownNode(type: .paragraph, content: line))
+                    if currentLineType == .codeBlock {
+                        strContent.append(line + "\n")
+                    } else {
+                        result.append(MarkdownNode(type: .paragraph, content: line))
+                    }
                 }
             }
         }
+        
         
         if currentLineType == .codeBlock && !strContent.isEmpty {
             result.append(MarkdownNode(type: .codeBlock, content: strContent))
@@ -282,47 +300,78 @@ struct Parser {
         
         return result
     }
+    
+    /// Takes collection of nodes and returns a string representation
+    ///
+    /// - Parameter  nodes: An array of MarkdownNodes
+    ///
+    func translateToText(_ nodes: [MarkdownNode]) -> String {
+        return nodes.map { node in
+            switch node.type {
+                case .checkbox(let checked, let label):
+                    return "[\(checked ? "x" : " ")] \(label)"
+                default:
+                    return node.content
+            }
+        }.joined(separator: "\n")
+    }
 }
 
 struct MarkdownRenderer: View {
     
-    var input: String = ""
+    @Binding var input: String
+    
+    var alignment: HorizontalAlignment
     var parser: Parser = Parser()
+    var compactMode: Bool
+    
     @State private var content: [MarkdownNode]
     
-    init(input: String) {
-        self.input = input
-        _content = State(initialValue: parser.parse(input))
+    init(input: Binding<String>, alignment: HorizontalAlignment = .leading, backgroundColor: Color = .white, compactMode: Bool = false) {
+        _input = input
+        _content = State(initialValue: parser.parse(input.wrappedValue))
+        
+        self.alignment = alignment
+        self.compactMode = compactMode
     }
     
     var body: some View {
-        ForEach($content, id: \.self) { $line in
-            switch line.type {
-                case .header(let level):
-                    headerItem(line, level)
-                case .codeBlock:
-                    codeItem(line)
-                case .link(let text, let url):
-                    linkItem(line, text, url)
-                case .checkbox(let checked, let label):
-                    checkboxItem(line, checked, label) {
-                        withAnimation {
-                            line.toggleCheckbox()
+        VStack (alignment: alignment) {
+            ForEach($content, id: \.self) { $line in
+                switch line.type {
+                    case .header(let level):
+                        headerItem(line, level)
+                    case .codeBlock:
+                        codeItem(line)
+                    case .link(let text, let url):
+                        linkItem(line, text, url)
+                    case .checkbox(let checked, let label):
+                        checkboxItem(line, checked, label) {
+                            withAnimation {
+                                line.toggleCheckbox()
+                                input = parser.translateToText(content)
+                            }
                         }
-                    }
-                default:
-                    Text(line.content)
+                    default:
+                        Text(line.content)
+                }
             }
         }
     }
     
     func checkboxItem(_ node: MarkdownNode, _ checked: Bool,_ label: String, toggle: @escaping () -> Void) -> some View {
-        Button (action: toggle) {
-            Label(label, systemImage: checked ? "checkmark.square.fill" : "square")
+        Button(action: toggle) {
+            HStack (alignment: .top) {
+                Image(systemName: checked ? "checkmark.square.fill" : "square")
+
+                Text(label)
+                    .strikethrough(checked)
+            }
+            
+            .fontWeight(.medium)
         }
         
-        .strikethrough(checked)
-        .foregroundStyle(checked ? .secondary : .primary)
+        .buttonStyle(.plain)
     }
     
     @ViewBuilder
@@ -333,7 +382,7 @@ struct MarkdownRenderer: View {
                     .padding()
                     .background(
                         RoundedRectangle(cornerRadius: 10)
-                            .fill(.regularMaterial)
+                            .fill(.ultraThinMaterial)
                     )
                     .fontWeight(.bold)
             }
@@ -345,14 +394,13 @@ struct MarkdownRenderer: View {
     func codeItem(_ node: MarkdownNode) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
             Text(node.content.dropFirst(3).dropLast(3))
-                .font(.system(size: 14, weight: .medium, design: .monospaced))
+                .font(.system(size: 14, weight: .heavy, design: .monospaced))
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 5)
-                        .fill(.regularMaterial)
+                        .fill(.ultraThinMaterial)
                         .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
                 )
-                .padding()
                 .fixedSize(horizontal: false, vertical: true)
         }
     }
@@ -360,18 +408,34 @@ struct MarkdownRenderer: View {
     func headerItem(_ node: MarkdownNode, _ level: Int) -> some View {
         Text(node.content.dropFirst(level))
             .font(headerFont(for: level))
+            .padding(.bottom, 5)
     }
     
     private func headerFont(for level: Int) -> Font {
-        switch level {
-        case 1: return .largeTitle.bold()
-        case 2: return .title.bold()
-        case 3: return .title2.bold()
-        case 4: return .title3
-        case 5: return .headline
-        case 6: return .subheadline
-        default: return .body
+        if compactMode {
+            return .title3.bold()
         }
+        
+        switch level {
+            case 1:
+                return .largeTitle.bold()
+            case 2:
+                return .title.bold()
+            case 3:
+                return .title2.bold()
+            case 4:
+                return .title3
+            case 5:
+                return .headline
+            case 6:
+                return .subheadline
+            default:
+                return .body
+        }
+    }
+    
+    static func readOnly(_ input: String) ->MarkdownRenderer {
+        return .init(input: .constant(input), alignment: .leading)
     }
 }
 
@@ -384,10 +448,9 @@ struct MarkdownRenderer: View {
 #Preview ("Markdown Renderer") {
     NavigationStack {
         ScrollView {
-            MarkdownRenderer(input: Note.placeholder.content)
+            MarkdownRenderer(input: .constant(Note.placeholder.content), alignment: .leading)
+                .padding()
         }
-        
-        .frame(width: 150, height: 150)
         .navigationTitle("Markdown Renderer")
     }
 }

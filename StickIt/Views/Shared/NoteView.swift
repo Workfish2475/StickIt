@@ -60,7 +60,7 @@ struct NoteView: View {
                     if viewModel.isEditing {
                         textEditingView
                     } else {
-                        markdownPresentation
+                        markdownView
                     }
                 }
                 
@@ -74,7 +74,6 @@ struct NoteView: View {
                     }
                 }
                 
-                .frame(minHeight: geo.size.height * 0.9, alignment: .top)
                 .background(
                         GeometryReader { proxy in
                             Color.clear
@@ -180,6 +179,7 @@ struct NoteView: View {
                 .onSubmit {
                     viewModel.updateTitle()
                 }
+            
             Text("Last Modified \(viewModel.getDate()) at \(viewModel.getTime())")
                 .font(.caption.bold())
                 .foregroundStyle(.secondary)
@@ -210,12 +210,7 @@ struct NoteView: View {
             )
             
             .focused($hasFocus)
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(viewColor.opacity(0.8)))
-            )
-            .padding()
+            .roundedBackground(color: viewColor, opacity: 0.8)
             .onChange(of: viewModel.contentField) {
                 proxy.scrollTo("textEditor", anchor: .bottom)
             }
@@ -272,17 +267,9 @@ struct NoteView: View {
         .padding(.horizontal)
     }
     
-    private var markdownPresentation: some View {
-        Markdown(markdownText: $viewModel.contentField, viewModel: viewModel)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-            .id(viewModel.contentField)
-            .padding()
-            .foregroundStyle(textColor.color)
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(viewColor.opacity(0.8)))
-            )
-            .padding()
+    private var markdownView: some View {
+        MarkdownRenderer(input: $viewModel.contentField, alignment: .leading, backgroundColor: viewColor)
+            .roundedBackground(color: viewColor)
     }
     
     var headerPicker: some View {
@@ -291,7 +278,7 @@ struct NoteView: View {
                 .font(.headline)
             
             HStack {
-                ForEach(1...4, id: \.self){ idx in
+                ForEach(1...6, id: \.self){ idx in
                     Button {
                         let item = Array(repeating: "#", count: idx).joined() + " "
                         addContent(item)
@@ -328,6 +315,29 @@ private struct ScrollOffsetKey: PreferenceKey {
     static var defaultValue: CGFloat = 0
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
         value += nextValue()
+    }
+}
+
+struct RoundedBackground: ViewModifier {
+    
+    var color: Color
+    var opacity: Double
+    
+    func body(content: Content) -> some View {
+        content
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .padding()
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(color.opacity(opacity))
+            )
+            .padding()
+    }
+}
+
+extension View {
+    func roundedBackground(color: Color = .white, opacity: Double = 0.8) -> some View {
+        modifier(RoundedBackground(color: color, opacity: opacity))
     }
 }
 

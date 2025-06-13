@@ -74,6 +74,9 @@ class Note: Codable {
                 Console.log("Hello World!);
             }```
 
+            ```private func greet(name: String) {
+                Console.log("Hello World!);
+            }```
             ## 🧠 Notes
             Remember to keep notes clear and organized. Use Markdown to highlight code, tasks, and references effectively.
             """,

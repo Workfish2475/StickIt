@@ -26,36 +26,32 @@ struct NoteItem: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
 
-                ZStack(alignment: .topLeading) {
-                    RoundedRectangle(cornerRadius: 5)
-                        .fill(Color(name: noteItem.color).opacity(0.8))
-
-                    ScrollView {
-                        Markdown(markdownText: .constant(noteItem.content))
-                            .id(noteItem.content)
-                            .multilineTextAlignment(.leading)
-                            .disabled(true)
-                            .font(.system(size: 14))
-                            .padding()
-                    }
-                    
-                    .scrollIndicators(.hidden)
+                ScrollView (.vertical, showsIndicators: false) {
+                    MarkdownRenderer(input: .constant(noteItem.content), alignment: .leading)
                 }
                 
-                .frame(height: geo.size.height * 0.55)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .frame(height: geo.size.height * 0.35)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
+                .multilineTextAlignment(.leading)
+                .font(.system(size: 14))
+                .disabled(true)
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color(name: noteItem.color).opacity(0.8))
+                )
+                
             }
             
-            .padding()
             .foregroundStyle(textColor.color)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .padding()
             .background(
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(name: noteItem.color).opacity(0.7))
+                    .fill(Color(name: noteItem.color).opacity(0.6))
             )
         }
         
-        .contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         .contextMenu {
             Button {
                 noteItem.isPinned.toggle()
