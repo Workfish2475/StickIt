@@ -15,12 +15,11 @@ struct NoteView: View {
     @Environment(\.dismiss) private var dismiss
     
     @FocusState private var hasFocus
+    @FocusState private var changingTitle
     
     @State private var scrollOffset: CGFloat = 0
-    @State private var selection: TextSelection? = nil
     @State private var selectedRange: NSRange = NSRange(location: 0, length: 0)
     @State private var showingHeaderView: Bool = false
-    @State private var showingAlert: Bool = false
     
     @State private var viewModel: NoteViewModel = NoteViewModel()
     
@@ -37,18 +36,6 @@ struct NoteView: View {
     
     private var viewColor: Color {
         return Color(name: viewModel.noteColor)
-    }
-    
-    private var keyboardColor: Color {
-        if textColor == .system {
-            if scheme == .dark {
-                return .white
-            } else {
-                return .black
-            }
-        } else {
-            return textColor.color
-        }
     }
     
     var body: some View {
@@ -159,7 +146,7 @@ struct NoteView: View {
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
-                    if viewModel.isEditing {
+                    if viewModel.isEditing || changingTitle {
                         editingView
                     }
                 }
@@ -176,6 +163,7 @@ struct NoteView: View {
             TextField("New Note", text: $viewModel.titleField)
                 .font(.largeTitle.bold())
                 .foregroundStyle(textColor.color)
+                .focused($changingTitle)
                 .onSubmit {
                     viewModel.updateTitle()
                 }
@@ -191,7 +179,9 @@ struct NoteView: View {
     
     private var editingView: some View {
         Button {
-             viewModel.saveNote(context)
+            viewModel.isEditing = false
+            changingTitle = false
+            viewModel.saveNote(context)
          } label: {
              Text("Done")
                  .foregroundStyle(textColor.color)
@@ -219,17 +209,20 @@ struct NoteView: View {
     
     private var keyboardToolbar: some View {
         HStack (spacing: 10) {
-            Button {
-                showingHeaderView.toggle()
+            Menu {
+                ForEach(1...6, id: \.self){ idx in
+                    Button {
+                        let item = Array(repeating: "#", count: idx).joined() + " "
+                        addContent(item)
+                        showingHeaderView.toggle()
+                    } label: {
+                        Text("Heading \(idx)")
+                            .font(headerFont(for: idx))
+                    }
+                }
             } label: {
                 Image(systemName: "textformat")
                     .fontWeight(.bold)
-            }
-            
-            .popover(isPresented: $showingHeaderView, attachmentAnchor: .point(.top), arrowEdge: .bottom) {
-                headerPicker
-                    .presentationCompactAdaptation(.popover)
-                    .padding()
             }
             
             Button {
@@ -273,26 +266,47 @@ struct NoteView: View {
     }
     
     var headerPicker: some View {
-        VStack (alignment: .leading) {
-            Text("Headings")
-                .font(.headline)
-            
-            HStack {
-                ForEach(1...6, id: \.self){ idx in
-                    Button {
-                        let item = Array(repeating: "#", count: idx).joined() + " "
-                        addContent(item)
-                        showingHeaderView.toggle()
-                    } label: {
-                        Text("\(idx)")
-                            .fontWeight(.bold)
+        ScrollView {
+            VStack (alignment: .leading) {
+                Text("Headings")
+                    .font(.headline)
+
+                FlowLayout (spacing: 5, alignment: .leading) {
+                    ForEach(1...6, id: \.self){ idx in
+                        Button {
+                            let item = Array(repeating: "#", count: idx).joined() + " "
+                            addContent(item)
+                            showingHeaderView.toggle()
+                        } label: {
+                            Text("Heading \(idx)")
+                                .font(headerFont(for: idx))
+                        }
+
+                        .tint(viewColor)
+                        .foregroundStyle(.white)
+                        .buttonStyle(.borderedProminent)
                     }
-                    
-                    .tint(viewColor)
-                    .foregroundStyle(.white)
-                    .buttonStyle(.borderedProminent)
                 }
             }
+        }
+    }
+    
+    private func headerFont(for level: Int) -> Font {
+        switch level {
+            case 1:
+                return .largeTitle.bold()
+            case 2:
+                return .title.bold()
+            case 3:
+                return .title2.bold()
+            case 4:
+                return .title3
+            case 5:
+                return .headline
+            case 6:
+                return .subheadline
+            default:
+                return .body
         }
     }
     
@@ -318,29 +332,6 @@ private struct ScrollOffsetKey: PreferenceKey {
     }
 }
 
-struct RoundedBackground: ViewModifier {
-    
-    var color: Color
-    var opacity: Double
-    
-    func body(content: Content) -> some View {
-        content
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(color.opacity(opacity))
-            )
-            .padding()
-    }
-}
-
-extension View {
-    func roundedBackground(color: Color = .white, opacity: Double = 0.8) -> some View {
-        modifier(RoundedBackground(color: color, opacity: opacity))
-    }
-}
-
 #Preview {
     NavigationStack {
         NoteView(noteItem: .placeholder)
@@ -349,4 +340,10 @@ extension View {
 
 #Preview ("HeaderView") {
     NoteView.init(noteItem: .placeholder).headerPicker
+}
+
+#Preview ("Empty View") {
+    NavigationStack {
+        NoteView.init(noteItem: nil)
+    }
 }

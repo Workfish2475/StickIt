@@ -11,7 +11,6 @@ import SwiftData
 import Foundation
 
 struct StickItTests {
-
     @Test func setNote() {
         let newNote = Note(
             name: "Demo",

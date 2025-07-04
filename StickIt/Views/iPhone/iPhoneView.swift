@@ -10,7 +10,7 @@ import SwiftData
 
 struct iPhoneView: View {
     
-    @Query private var notes: [Note]
+    @Query(sort: \Note.lastModified) private var notes: [Note]
     @Namespace private var namespace
     @State private var showingEntry: Bool = false
     @Environment(\.colorScheme) private var scheme

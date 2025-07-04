@@ -57,7 +57,7 @@ struct ContentView: View {
                     selectedNote = nil
                     addingNote = true
                 } label: {
-                    Label("New Task", systemImage: "plus")
+                    Label("New Note", systemImage: "plus")
                 }
                 
                 .padding()

@@ -29,8 +29,8 @@ struct ContentView: View {
     var body: some View {
     NavigationStack {
         deviceView()
-            .navigationTitle("StickIt")
-            .navigationBarTitleDisplayMode(.automatic)
+            .navigationTitle("Notes")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem (placement: .topBarTrailing) {
                     Button {

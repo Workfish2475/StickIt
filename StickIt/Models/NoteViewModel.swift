@@ -14,16 +14,22 @@ class NoteViewModel {
     
     var noteItem: Note?
     
+    // MARK: - General business logic (not specific to mobile or desktop)
     var titleField: String = ""
     var contentField: String = ""
     var noteColor: String = "blue"
     var isPinned: Bool = false
     var lastModified: Date = Date.now
-    
     var changingColor: Bool = false
     var isEditing: Bool = false
     
+    var viewColor: Color {
+        return Color(self.noteColor)
+    }
+    
+    // MARK: - Platform specific logic or members
     var isShowingHeader: Bool = false
+    var scrollOffset: CGFloat = 0
     
     func setNote(_ note: Note) {
         self.noteItem = note
@@ -56,8 +62,6 @@ class NoteViewModel {
             context.insert(newNote)
             self.noteItem = newNote
         }
-
-        self.isEditing = false
         
         do {
             try context.save()

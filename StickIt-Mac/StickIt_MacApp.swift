@@ -14,7 +14,7 @@ struct StickIt_MacApp: App {
         WindowGroup {
             ContentView()
                 .modelContainer(for: [Note.self])
-                .frame(minWidth: 450, idealWidth: 600, minHeight: 450, idealHeight: 800) 
+                .frame(minWidth: 550, idealWidth: 600, minHeight: 450, idealHeight: 800)
         }
         .windowStyle(.hiddenTitleBar)
       
@@ -36,6 +36,16 @@ struct StickIt_MacApp: App {
             Text("Something")
         }
     }
+    
+    
+//    WindowGroup("Note View", for: Note.self) { $note in
+//        if let unwrappedNote = note {
+//            StickyView(noteItem: unwrappedNote, noteId: unwrappedNote.id)
+//                .modelContainer(for: [Note.self])
+//                .frame(minWidth: 275, minHeight: 250)
+//                .navigationTitle(unwrappedNote.name)
+//        }
+//    }
 }
 
 struct SettingsView: View {
@@ -43,8 +53,29 @@ struct SettingsView: View {
     @State private var selection: Int = 0
     
     var body: some View {
-        TabView(selection: $selection) {
-            
+        NavigationStack {
+            List {
+                Section ("General") {
+                    NavigationLink(destination: TextColorPicker()) {
+                        Label("Text Color", systemImage: "character")
+                    }
+                    
+                    NavigationLink(destination: TextColorPicker()) {
+                        Label("Theme", systemImage: "moon")
+                    }
+                }
+            }
         }
     }
+}
+
+
+struct AppearancePicker: View {
+    var body: some View {
+        Text("Appearance Picker")
+    }
+}
+
+#Preview ("Settings View") {
+    SettingsView()
 }

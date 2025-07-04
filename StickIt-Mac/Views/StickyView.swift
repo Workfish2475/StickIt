@@ -18,8 +18,13 @@ struct StickyView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scene
     
+    @Query private var note: [Note]
+    
     init(noteItem: Note) {
         self.noteItem = noteItem
+        
+        _note = Query(filter: #Predicate<Note> { $0.id == noteItem.id})
+        
         let viewModel = NoteViewModel()
         viewModel.setNote(noteItem)
         _viewModel = State(initialValue: viewModel)
@@ -30,6 +35,9 @@ struct StickyView: View {
     }
     
     var body: some View {
+        
+        let currentNote = note.first ?? noteItem
+        
         GeometryReader { geo in
             VStack (spacing: 5) {
                 HStack {
@@ -41,16 +49,12 @@ struct StickyView: View {
                     contentArea()
                 }
                 
+                .roundedBackground(color: noteColor)
                 .onTapGesture {
                     withAnimation {
                         viewModel.isEditing.toggle()
                     }
                 }
-                
-                .padding()
-                .background(noteColor)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                .padding()
             }
             
             .foregroundStyle(.white)
@@ -63,6 +67,10 @@ struct StickyView: View {
             if scene == .active {
                 viewModel.syncChanges(context)
             }
+        }
+        
+        .onAppear() {
+            viewModel.setNote(currentNote)
         }
 
         .onAppear {
@@ -150,8 +158,7 @@ struct StickyView: View {
     }
     
     private var markdownView: some View {
-        Markdown(markdownText: $viewModel.contentField, viewModel: viewModel)
-            .frame(maxWidth: .infinity, alignment: .leading)
+        MarkdownRenderer(input: $viewModel.contentField)
     }
 }
 

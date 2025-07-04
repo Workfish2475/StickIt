@@ -47,7 +47,7 @@ struct NotesView: View {
                     textEditingView
                         .frame(maxWidth: .infinity)
                 } else {
-                    markdownView
+                    markdownViewPrototype
                         .onTapGesture {
                             withAnimation {
                                 viewModel.isEditing.toggle()
@@ -134,6 +134,7 @@ struct NotesView: View {
             if viewModel.isEditing {
                 Button {
                     withAnimation {
+                        viewModel.isEditing.toggle()
                         viewModel.saveNote(context)
                     }
                 } label: {
@@ -148,8 +149,15 @@ struct NotesView: View {
     
     private var editingTools: some View {
         HStack {
-            Button {
-                addContent("#")
+            Menu {
+                ForEach(1...6, id: \.self){idx in
+                    Button {
+                        let item = Array(repeating: "#", count: idx).joined() + " "
+                        addContent(item)
+                    } label: {
+                        Text("Heading \(idx)")
+                    }
+                }
             } label: {
                 Label("Heading", systemImage: "textformat")
             }
@@ -196,13 +204,13 @@ struct NotesView: View {
     
     var textEditingView: some View {
         TextEditor(text: $viewModel.contentField)
-            .padding()
             .font(.body)
             .textEditorStyle(.plain)
             .submitLabel(.done)
             .foregroundStyle(.white)
             .multilineTextAlignment(.leading)
             .scrollIndicators(.never)
+            .padding()
             .background(
                 RoundedRectangle(cornerRadius: 10)
                     .fill(Color(Color(name: viewModel.noteColor).opacity(0.8)))
@@ -213,17 +221,9 @@ struct NotesView: View {
             }
     }
     
-    var markdownView: some View {
-        Markdown(markdownText: $viewModel.contentField, viewModel: viewModel)
-            .frame(maxWidth: .infinity, alignment: .topLeading)
-            .padding()
-            .multilineTextAlignment(.leading)
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(Color(name: viewModel.noteColor).opacity(0.8)))
-            )
-            .padding()
-            .foregroundStyle(.white)
+    var markdownViewPrototype: some View {
+        MarkdownRenderer(input: $viewModel.contentField)
+            .roundedBackground(color: noteColor)
     }
     
     // MARK: - Open a new window if not open, or close if already open.
