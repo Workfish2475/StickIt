@@ -57,6 +57,7 @@ struct NoteItem: View {
                     
                 .padding()
                 .frame(minWidth: 350)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Color(name: noteItem.color).opacity(0.6))
             }
     }

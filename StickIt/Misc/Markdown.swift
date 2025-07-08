@@ -135,19 +135,22 @@ struct MarkdownRenderer: View {
     @Binding var input: String
     
     var alignment: HorizontalAlignment
-    var parser: Parser = Parser()
+    let parser: Parser
     var compactMode: Bool
-    
-    //Maybe think about passing a viewModel here to save changes made to content (for MacOS)
+    var viewModel: NoteViewModel?
     
     @State private var content: [MarkdownNode]
     
-    init(input: Binding<String>, alignment: HorizontalAlignment = .leading, backgroundColor: Color = .white, compactMode: Bool = false) {
-        _input = input
-        _content = State(initialValue: parser.parse(input.wrappedValue))
-        
+    @Environment(\.modelContext) private var context
+    
+    init(input: Binding<String>, alignment: HorizontalAlignment = .leading, backgroundColor: Color = .white, compactMode: Bool = false, viewModel: NoteViewModel? = nil) {
+        self.parser = Parser()
         self.alignment = alignment
         self.compactMode = compactMode
+        self.viewModel = viewModel
+        
+        _input = input
+        _content = State(initialValue: parser.parse(input.wrappedValue))
     }
     
     var body: some View {
@@ -165,6 +168,7 @@ struct MarkdownRenderer: View {
                             withAnimation {
                                 line.toggleCheckbox()
                                 input = parser.translateToText(content)
+                                viewModel?.saveNote(context)
                             }
                         }
                     default:
@@ -249,7 +253,7 @@ struct MarkdownRenderer: View {
         }
     }
     
-    static func readOnly(_ input: String) ->MarkdownRenderer {
+    static func readOnly(_ input: String) -> MarkdownRenderer {
         return .init(input: .constant(input), alignment: .leading)
     }
 }

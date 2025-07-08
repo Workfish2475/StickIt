@@ -30,12 +30,10 @@ struct NoteView: View {
         let viewModel = NoteViewModel()
         if let noteItem = noteItem {
             viewModel.setNote(noteItem)
+        } else {
+            viewModel.noteColor = Color.namedColors[Int.random(in: 0..<Color.namedColors.count)].color.description
         }
         _viewModel = State(initialValue: viewModel)
-    }
-    
-    private var viewColor: Color {
-        return Color(name: viewModel.noteColor)
     }
     
     var body: some View {
@@ -83,7 +81,7 @@ struct NoteView: View {
             
             .sensoryFeedback(.impact, trigger: viewModel.isEditing)
             .navigationBarBackButtonHidden(true)
-            .background(viewColor.opacity(0.6))
+            .background(viewModel.viewColor.opacity(0.6))
             .animation(.easeIn, value: viewModel.isEditing)
             .navigationBarTitleDisplayMode(.inline)
             
@@ -93,7 +91,7 @@ struct NoteView: View {
             )
             
             .toolbarBackground(
-                viewColor.opacity(0.6),
+                viewModel.viewColor.opacity(0.6),
                 for: .navigationBar
             )
             
@@ -196,11 +194,11 @@ struct NoteView: View {
                 text: $viewModel.contentField,
                 selectedRange: $selectedRange,
                 keyboardToolbar: keyboardToolbar.eraseToAnyView(),
-                color: viewColor
+                color: viewModel.viewColor
             )
             
             .focused($hasFocus)
-            .roundedBackground(color: viewColor, opacity: 0.8)
+            .roundedBackground(color: viewModel.viewColor, opacity: 0.8)
             .onChange(of: viewModel.contentField) {
                 proxy.scrollTo("textEditor", anchor: .bottom)
             }
@@ -261,34 +259,8 @@ struct NoteView: View {
     }
     
     private var markdownView: some View {
-        MarkdownRenderer(input: $viewModel.contentField, alignment: .leading, backgroundColor: viewColor)
-            .roundedBackground(color: viewColor)
-    }
-    
-    var headerPicker: some View {
-        ScrollView {
-            VStack (alignment: .leading) {
-                Text("Headings")
-                    .font(.headline)
-
-                FlowLayout (spacing: 5, alignment: .leading) {
-                    ForEach(1...6, id: \.self){ idx in
-                        Button {
-                            let item = Array(repeating: "#", count: idx).joined() + " "
-                            addContent(item)
-                            showingHeaderView.toggle()
-                        } label: {
-                            Text("Heading \(idx)")
-                                .font(headerFont(for: idx))
-                        }
-
-                        .tint(viewColor)
-                        .foregroundStyle(.white)
-                        .buttonStyle(.borderedProminent)
-                    }
-                }
-            }
-        }
+        MarkdownRenderer(input: $viewModel.contentField, alignment: .leading, backgroundColor: viewModel.viewColor, viewModel: viewModel)
+            .roundedBackground(color: viewModel.viewColor)
     }
     
     private func headerFont(for level: Int) -> Font {
@@ -336,10 +308,6 @@ private struct ScrollOffsetKey: PreferenceKey {
     NavigationStack {
         NoteView(noteItem: .placeholder)
     }
-}
-
-#Preview ("HeaderView") {
-    NoteView.init(noteItem: .placeholder).headerPicker
 }
 
 #Preview ("Empty View") {

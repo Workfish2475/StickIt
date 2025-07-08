@@ -24,7 +24,7 @@ class NoteViewModel {
     var isEditing: Bool = false
     
     var viewColor: Color {
-        return Color(self.noteColor)
+        return Color(name: noteColor)
     }
     
     // MARK: - Platform specific logic or members
