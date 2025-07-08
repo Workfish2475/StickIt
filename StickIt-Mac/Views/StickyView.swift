@@ -23,7 +23,7 @@ struct StickyView: View {
     init(noteItem: Note) {
         self.noteItem = noteItem
         
-        _note = Query(filter: #Predicate<Note> { $0.id == noteItem.id})
+        _note = Query(filter: #Predicate<Note> { $0.id == noteItem.id}, animation: .default )
         
         let viewModel = NoteViewModel()
         viewModel.setNote(noteItem)
@@ -34,10 +34,11 @@ struct StickyView: View {
         return Color(name: viewModel.noteColor)
     }
     
+    var currentNoteItem: Note? {
+        note.first
+    }
+    
     var body: some View {
-        
-        let currentNote = note.first ?? noteItem
-        
         GeometryReader { geo in
             VStack (spacing: 5) {
                 HStack {
@@ -63,28 +64,34 @@ struct StickyView: View {
             )
         }
         
-        .onChange(of: scene) {
-            if scene == .active {
-                viewModel.syncChanges(context)
-            }
-        }
-        
-        .onAppear() {
-            viewModel.setNote(currentNote)
-        }
-
         .onAppear {
-            DispatchQueue.main.async {
-                if let window = NSApplication.shared.windows.first(where: { $0.title == noteItem.name }) {
-                    window.isOpaque = true
-                    window.titleVisibility = .hidden
-                    window.standardWindowButton(.closeButton)?.isHidden = true
-                    window.standardWindowButton(.miniaturizeButton)?.isHidden = true
-                    window.standardWindowButton(.zoomButton)?.isHidden = true
-                    window.isMovableByWindowBackground = true
-                    window.level = .normal
+            NotificationCenter.default.addObserver(
+                forName: NSApplication.didBecomeActiveNotification,
+                object: nil,
+                queue: .main
+            ) { _ in
+                if let currentNote = currentNoteItem {
+                    viewModel.setNote(currentNote)
                 }
             }
+            
+            customizeWindow()
+        }
+        
+        .onDisappear() {
+            NotificationCenter.default.removeObserver(self)
+        }
+    }
+    
+    @ViewBuilder
+    func contentArea() -> some View {
+        if viewModel.isEditing {
+            editingView
+        } else {
+            markdownView
+                .onDisappear() {
+                    viewModel.syncChanges(context)
+                }
         }
     }
     
@@ -108,6 +115,7 @@ struct StickyView: View {
             
             Button {
                 viewModel.saveNote(context)
+                viewModel.isEditing.toggle()
             } label: {
                 Image(systemName: "checkmark.circle.fill")
                     .padding(5)
@@ -138,18 +146,6 @@ struct StickyView: View {
         .padding([.horizontal])
     }
     
-    @ViewBuilder
-    func contentArea() -> some View {
-        if viewModel.isEditing {
-            editingView
-        } else {
-            markdownView
-                .onDisappear() {
-                    viewModel.syncChanges(context)
-                }
-        }
-    }
-    
     private var editingView: some View {
         TextEditor(text: $viewModel.contentField)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -159,6 +155,20 @@ struct StickyView: View {
     
     private var markdownView: some View {
         MarkdownRenderer(input: $viewModel.contentField)
+    }
+    
+    private func customizeWindow() {
+        DispatchQueue.main.async {
+            if let window = NSApplication.shared.windows.first(where: { $0.title == noteItem.name }) {
+                window.isOpaque = true
+                window.titleVisibility = .hidden
+                window.standardWindowButton(.closeButton)?.isHidden = true
+                window.standardWindowButton(.miniaturizeButton)?.isHidden = true
+                window.standardWindowButton(.zoomButton)?.isHidden = true
+                window.isMovableByWindowBackground = true
+                window.level = .normal
+            }
+        }
     }
 }
 

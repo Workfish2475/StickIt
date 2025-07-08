@@ -19,17 +19,26 @@ struct NoteProvider: AppIntentTimelineProvider {
     }
     
     func timeline(for configuration: SelectedNote, in context: Context) async -> Timeline<SimpleEntry> {
-        let entry =  await entry(for: configuration)
-        let timeline = Timeline(entries: [entry], policy: .never)
+        
+        var entries: [SimpleEntry] = []
+        
+        let currentDate = Date()
+        for minuteOffset in stride(from: 0, through: 120, by: 15) {
+            let entryDate = Calendar.current.date(byAdding: .minute, value: minuteOffset, to: currentDate)!
+            let entry = await entry(for: configuration, date: entryDate)
+            entries.append(entry)
+        }
+        
+        let timeline = Timeline(entries: entries, policy: .atEnd)
         return timeline
     }
     
-    private func entry(for configuration: SelectedNote) async -> SimpleEntry {
+    private func entry(for configuration: SelectedNote, date: Date = Date()) async -> SimpleEntry {
         do {
             let modelContext = try ModelContext(.init(for: Note.self))
             
             guard configuration.noteItem != nil else {
-                return SimpleEntry(date: Date(), config: .demo)
+                return SimpleEntry(date: date, config: .demo)
             }
             
             let id = configuration.noteItem!.id
@@ -40,12 +49,13 @@ struct NoteProvider: AppIntentTimelineProvider {
             )
             
             if (try modelContext.fetch(descriptor).first) != nil {
-                return SimpleEntry(date: Date(), config: configuration)
+                return SimpleEntry(date: date, config: configuration)
             } else {
-                return SimpleEntry(date: Date(), config: .demo)
+                return SimpleEntry(date: date, config: .demo)
             }
         } catch {
-            return SimpleEntry(date: Date(), config: .demo)
+            print("Widget timeline error: \(error)")
+            return SimpleEntry(date: date, config: .demo)
         }
     }
 }

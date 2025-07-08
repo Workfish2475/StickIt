@@ -50,7 +50,7 @@ struct iPadView: View {
                 .matchedTransitionSource(id: "newNote", in: namespace)
         }
         
-        .navigationTitle("StickIt")
+        .navigationTitle("Notes")
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .navigationDestination(for: Note.self) { note in
             NoteView(noteItem: note)

@@ -33,19 +33,9 @@ struct StickIt_MacApp: App {
         .windowLevel(.floating)
         
         Settings {
-            Text("Something")
+            SettingsView()
         }
     }
-    
-    
-//    WindowGroup("Note View", for: Note.self) { $note in
-//        if let unwrappedNote = note {
-//            StickyView(noteItem: unwrappedNote, noteId: unwrappedNote.id)
-//                .modelContainer(for: [Note.self])
-//                .frame(minWidth: 275, minHeight: 250)
-//                .navigationTitle(unwrappedNote.name)
-//        }
-//    }
 }
 
 struct SettingsView: View {

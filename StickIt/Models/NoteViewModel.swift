@@ -41,35 +41,50 @@ class NoteViewModel {
     }
     
     func saveNote(_ context: ModelContext) -> Void {
-        if titleField.isEmpty {
+        guard let noteItem = noteItem else {
+            if !titleField.isEmpty || !contentField.isEmpty {
+                let newNote = Note(
+                    name: titleField,
+                    content: contentField,
+                    color: noteColor,
+                    isPinned: isPinned,
+                    lastModified: lastModified
+                )
+                
+                self.noteItem = newNote
+                context.insert(newNote)
+                
+                do {
+                    try context.save()
+                    WidgetCenter.shared.reloadAllTimelines()
+                } catch {
+                    print("error saving new note: \(error)")
+                }
+            }
+            
             return
         }
-
-        if let existingNote = noteItem {
-            existingNote.name = titleField
-            existingNote.content = contentField
-            existingNote.color = noteColor
-            existingNote.isPinned = isPinned
-            existingNote.lastModified = lastModified
-        } else {
-            let newNote = Note(
-                name: titleField,
-                content: contentField,
-                color: noteColor,
-                isPinned: isPinned,
-                lastModified: lastModified
-            )
-            context.insert(newNote)
-            self.noteItem = newNote
+        
+        
+        if noteItem.name == titleField &&
+            noteItem.content == contentField &&
+            noteItem.color == noteColor &&
+            noteItem.isPinned == isPinned {
+            return
         }
+        
+        noteItem.name = titleField
+        noteItem.content = contentField
+        noteItem.color = noteColor
+        noteItem.isPinned = isPinned
+        noteItem.lastModified = Date()
         
         do {
             try context.save()
+            WidgetCenter.shared.reloadAllTimelines()
         } catch {
-            print("error saving: \(error)")
+            print("error saving updated note: \(error)")
         }
-        
-        WidgetCenter.shared.reloadAllTimelines()
     }
     
     func deleteNote(_ context: ModelContext) -> Void {
