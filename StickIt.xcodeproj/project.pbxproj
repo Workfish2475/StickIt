@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1104B37D2F5CDAB400C93ADB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104B3692F5CDAB400C93ADB /* ContentView.swift */; };
 		11AE6A242DB6DFF8004A1E01 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11AE6A232DB6DFF8004A1E01 /* StoreKit.framework */; };
 		11AE6A2A2DB70A1B004A1E01 /* StickIt - Sticky Notes.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 11AE6A292DB70A1B004A1E01 /* StickIt - Sticky Notes.storekit */; };
 		11D354A52DADCC5700514154 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11D354A42DADCC5700514154 /* WidgetKit.framework */; };
@@ -68,6 +69,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1104B3692F5CDAB400C93ADB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		1136F4892DAB337200B18344 /* StickIt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StickIt.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1136F49A2DAB337400B18344 /* StickItTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StickItTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1136F4A42DAB337400B18344 /* StickItUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StickItUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -75,6 +77,7 @@
 		1136F5702DAB3AB400B18344 /* StickIt-MacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "StickIt-MacTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1136F57A2DAB3AB400B18344 /* StickIt-MacUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "StickIt-MacUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1164034D2DF2057D003AA5B9 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
+		11A8B65B2F731403007E7E42 /* StickIt - Sticky NotesRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "StickIt - Sticky NotesRelease.entitlements"; sourceTree = "<group>"; };
 		11AE6A232DB6DFF8004A1E01 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		11AE6A292DB70A1B004A1E01 /* StickIt - Sticky Notes.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = "StickIt - Sticky Notes.storekit"; sourceTree = "<group>"; };
 		11D354A22DADCC5700514154 /* StickIt-WidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "StickIt-WidgetExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -302,9 +305,11 @@
 		1136F4802DAB337200B18344 = {
 			isa = PBXGroup;
 			children = (
+				11A8B65B2F731403007E7E42 /* StickIt - Sticky NotesRelease.entitlements */,
 				11AE6A292DB70A1B004A1E01 /* StickIt - Sticky Notes.storekit */,
 				1136F4BB2DAB342C00B18344 /* SwiftData */,
 				1136F48B2DAB337200B18344 /* StickIt */,
+				1104B3692F5CDAB400C93ADB /* ContentView.swift */,
 				1136F49D2DAB337400B18344 /* StickItTests */,
 				1136F4A72DAB337400B18344 /* StickItUITests */,
 				1136F5622DAB3AB200B18344 /* StickIt-Mac */,
@@ -626,6 +631,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1104B37D2F5CDAB400C93ADB /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1035,7 +1041,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
-				CODE_SIGN_ENTITLEMENTS = "StickIt-Mac/StickIt_Mac.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "StickIt - Sticky NotesRelease.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;

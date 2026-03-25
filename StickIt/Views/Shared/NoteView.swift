@@ -23,8 +23,6 @@ struct NoteView: View {
     
     @State private var viewModel: NoteViewModel = NoteViewModel()
     
-    @AppStorage("textColor") private var textColor: TextColor = .black
-    
     init(noteItem: Note? = nil) {
         self.noteItem = noteItem
         let viewModel = NoteViewModel()
@@ -67,6 +65,7 @@ struct NoteView: View {
                     )
             }
             
+            .foregroundStyle(.white)
             .scrollDismissesKeyboard(.interactively)
             .scrollIndicators(.hidden)
             .coordinateSpace(name: "scroll")
@@ -81,17 +80,11 @@ struct NoteView: View {
             
             .sensoryFeedback(.impact, trigger: viewModel.isEditing)
             .navigationBarBackButtonHidden(true)
-            .background(viewModel.viewColor.opacity(0.6))
             .animation(.easeIn, value: viewModel.isEditing)
             .navigationBarTitleDisplayMode(.inline)
             
             .toolbarBackground(
                 scrollOffset < 50 ? .visible : .hidden,
-                for: .navigationBar
-            )
-            
-            .toolbarBackground(
-                viewModel.viewColor.opacity(0.6),
                 for: .navigationBar
             )
             
@@ -103,8 +96,6 @@ struct NoteView: View {
                         Label("Back", systemImage: "chevron.left")
                             .labelStyle(.titleAndIcon)
                     }
-                    
-                    .tint(textColor.color)
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
@@ -139,7 +130,6 @@ struct NoteView: View {
                     } label: {
                         Image(systemName: "ellipsis.circle")
                             .imageScale(.large)
-                            .foregroundColor(textColor.color)
                     }
                 }
                 
@@ -151,6 +141,10 @@ struct NoteView: View {
             }
         }
         
+        .background(
+            Color(name: viewModel.noteColor)
+        )
+        
         .onDisappear() {
             viewModel.saveNote(context)
         }
@@ -160,16 +154,10 @@ struct NoteView: View {
         VStack {
             TextField("New Note", text: $viewModel.titleField)
                 .font(.largeTitle.bold())
-                .foregroundStyle(textColor.color)
                 .focused($changingTitle)
                 .onSubmit {
                     viewModel.updateTitle()
                 }
-            
-            Text("Last Modified \(viewModel.getDate()) at \(viewModel.getTime())")
-                .font(.caption.bold())
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
         }
         
         .padding([.horizontal])
@@ -182,33 +170,24 @@ struct NoteView: View {
             viewModel.saveNote(context)
          } label: {
              Text("Done")
-                 .foregroundStyle(textColor.color)
                  .fontWeight(.bold)
          }
     }
     
-    var textEditingView: some View {
-        ScrollViewReader { proxy in
+    private var textEditingView: some View {
             UIKitTextView(
                 "",
                 text: $viewModel.contentField,
                 selectedRange: $selectedRange,
                 keyboardToolbar: keyboardToolbar.eraseToAnyView(),
-                color: viewModel.viewColor
+                color: .clear
             )
-            
-            .focused($hasFocus)
-            .roundedBackground(color: viewModel.viewColor, opacity: 0.8)
-            .onChange(of: viewModel.contentField) {
-                proxy.scrollTo("textEditor", anchor: .bottom)
-            }
         }
-    }
     
     private var keyboardToolbar: some View {
         HStack (spacing: 10) {
             Menu {
-                ForEach(1...6, id: \.self){ idx in
+                ForEach(1...4, id: \.self){ idx in
                     Button {
                         let item = Array(repeating: "#", count: idx).joined() + " "
                         addContent(item)
@@ -259,9 +238,9 @@ struct NoteView: View {
     }
     
     private var markdownView: some View {
-        MarkdownRenderer(input: $viewModel.contentField, alignment: .leading, backgroundColor: viewModel.viewColor, viewModel: viewModel)
-            .roundedBackground(color: viewModel.viewColor)
-    }
+            MarkdownRenderer(input: $viewModel.contentField, alignment: .leading, viewModel: viewModel)
+                .padding(.horizontal)
+        }
     
     private func headerFont(for level: Int) -> Font {
         switch level {

@@ -48,17 +48,14 @@ struct NoteItem: View {
                         MarkdownRenderer(input: .constant(noteItem.content), alignment: .leading)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding()
-                            .background(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(Color(name: noteItem.color))
-                            )
                     }
                 }
                     
                 .padding()
                 .frame(minWidth: 350)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(name: noteItem.color).opacity(0.6))
+                .background(Color(name: noteItem.color))
+                .foregroundStyle(.white)
             }
     }
 
@@ -72,44 +69,43 @@ struct NoteItem: View {
         }
     }
     
+    
     private var smallTitle: some View {
-        GeometryReader { geo in
-            VStack(alignment: .leading, spacing: 10) {
-                VStack {
-                    Text(noteItem.name)
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    Text(getTimeString(noteItem))
-                        .font(.caption.bold())
-                        .foregroundStyle(.secondary.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(alignment: .top) {
+                Text(noteItem.name)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .lineLimit(2)
 
-                ScrollView (.vertical, showsIndicators: false) {
-                    MarkdownRenderer(input: .constant(noteItem.content), alignment: .leading)
+                Spacer()
+
+                if noteItem.isPinned {
+                    Image(systemName: "pin.fill")
+                        .font(.caption)
+                        .foregroundStyle(.white.opacity(0.8))
                 }
-                
-                .frame(height: geo.size.height * 0.35)
-                .frame(maxWidth: .infinity, alignment: .topLeading)
-                .multilineTextAlignment(.leading)
-                .font(.system(size: 14))
-                .disabled(true)
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color(name: noteItem.color).opacity(0.8))
-                )
-                
             }
-            
-            .foregroundStyle(textColor.color)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(name: noteItem.color).opacity(0.6))
-            )
+
+            Text(getTimeString(noteItem))
+                .font(.caption2)
+                .foregroundStyle(.white.opacity(0.75))
         }
+        
+        .padding(15)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color(name: noteItem.color))
+        )
+        
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(.white.opacity(0.08), lineWidth: 1)
+        )
+        
+        .shadow(color: .black.opacity(0.18), radius: 10, x: 0, y: 6)
+        .foregroundStyle(.white)
     }
 }
 

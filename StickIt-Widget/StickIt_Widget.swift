@@ -91,7 +91,7 @@ struct StickIt_WidgetEntryView: View {
                     RoundedRectangle(cornerRadius: 10)
                         .fill(Color(name: entry.config.noteItem!.color))
 
-                    MarkdownRenderer(input: $text, compactMode: true)
+                    MarkdownRenderer(input: $text)
                         .padding()
                 }
                 

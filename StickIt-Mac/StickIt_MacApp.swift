@@ -10,13 +10,14 @@ import SwiftData
 
 @main
 struct StickIt_MacApp: App {
+    
+    @Query private var notes: [Note]
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .modelContainer(for: [Note.self])
-                .frame(minWidth: 550, idealWidth: 600, minHeight: 450, idealHeight: 800)
         }
-        .windowStyle(.hiddenTitleBar)
       
         WindowGroup("Note View", for: Note.self) { $note in
             if let unwrappedNote = note {
@@ -27,10 +28,10 @@ struct StickIt_MacApp: App {
             }
         }
         
-        .defaultSize(CGSize(width: 250, height: 225))
-        .windowResizability(.contentMinSize)
         .windowStyle(.hiddenTitleBar)
-        .windowLevel(.floating)
+        .commands {
+            SettingCommands()
+        }
         
         Settings {
             SettingsView()
@@ -38,6 +39,39 @@ struct StickIt_MacApp: App {
     }
 }
 
+struct SettingCommands: Commands {
+    var body: some Commands {
+        CommandMenu("Settings") {
+            Button ("Test Settings") {
+                
+            }
+            
+            .keyboardShortcut("n", modifiers: .command)
+        }
+        
+    }
+}
+
+struct StickyWindowScene: View {
+    @Environment(\.modelContext) private var context
+    @Query private var notes: [Note]
+    let noteID: Note.ID
+
+    var note: Note? {
+        notes.first(where: { $0.id == noteID })
+    }
+
+    var body: some View {
+        if let note {
+            StickyView(noteItem: note)
+                .navigationTitle(note.name)
+        } else {
+            Text("Note not found")
+        }
+    }
+}
+
+// TODO: This needs to be moved into menu bar.
 struct SettingsView: View {
     
     @State private var selection: Int = 0

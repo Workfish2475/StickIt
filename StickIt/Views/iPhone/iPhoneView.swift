@@ -18,14 +18,20 @@ struct iPhoneView: View {
     
     let columns = Array(repeating: GridItem(.flexible()), count: 2)
     
+    private var sortedNotes: [Note] {
+        notes.sorted {
+            if $0.isPinned != $1.isPinned {
+                return $0.isPinned
+            }
+            return $0.lastModified > $1.lastModified
+        }
+    }
+    
     var body: some View {
         ZStack (alignment: .bottomTrailing) {
             VStack {
                 Group {
-                    let pinnedNotes = notes.filter({ $0.isPinned })
-                    let generalNotes = notes.filter({ !$0.isPinned })
-                    
-                    if pinnedNotes.isEmpty && generalNotes.isEmpty {
+                    if sortedNotes.isEmpty {
                         ContentUnavailableView {
                             Label("No Notes Found", systemImage: "note.text")
                                 .foregroundStyle(Color.accentColor.gradient)
@@ -34,13 +40,8 @@ struct iPhoneView: View {
                         }
                     } else {
                         ScrollView {
-                            if (!pinnedNotes.isEmpty) {
-                                noteSection("Pinned", pinnedNotes)
-                            }
-                            
-                            if (!generalNotes.isEmpty) {
-                                noteSection("General", generalNotes)
-                            }
+                            noteSection("Recent", sortedNotes)
+                            noteSection("Older", sortedNotes)
                         }
                     }
                 }
@@ -80,37 +81,30 @@ struct iPhoneView: View {
         }
     }
     
-    func noteSection(_ title: String ,_ noteItems: [Note]) -> some View {
-        LazyVGrid (columns: columns, spacing: 10) {
-            Section {
+    func noteSection(_ title: String, _ noteItems: [Note]) -> some View {
+        VStack(alignment: .leading, spacing: 15) {
+            
+            Text(title)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.secondary)
+            
+            FlowLayout(spacing: 10, alignment: .leading) {
                 ForEach(noteItems, id: \.persistentModelID) { note in
                     NavigationLink(value: note) {
                         NoteItem(noteItem: note)
                             .matchedTransitionSource(id: note.persistentModelID, in: namespace)
-                            .frame(height: 175)
-                            .frame(maxWidth: 175, maxHeight: 175)
-                            .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 1)
                     }
                 }
-            } header: {
-                HStack {
-                    Text(title)
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                    
-                    Spacer()
-                }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 16)
                 .fill(.ultraThinMaterial)
                 .shadow(color: .black.opacity(0.03), radius: 5, x: 0, y: 1)
         )
-        .padding()
-        .frame(maxWidth: .infinity)
+        .padding(.horizontal)
     }
 }
 

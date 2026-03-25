@@ -29,7 +29,7 @@ struct ContentView: View {
     var body: some View {
     NavigationStack {
         deviceView()
-            .navigationTitle("Notes")
+            .navigationTitle("Alexander's Notes")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem (placement: .topBarTrailing) {

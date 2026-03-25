@@ -43,8 +43,15 @@ struct StickyView: View {
             VStack (spacing: 5) {
                 HStack {
                     titleView
+                
+                    if ( viewModel.isEditing ) {
+                        editingTools
+                    }
+                    
                     windowTools
                 }
+
+                .padding(.trailing)
                 
                 ScrollView (showsIndicators: false) {
                     contentArea()
@@ -65,21 +72,20 @@ struct StickyView: View {
         }
         
         .onAppear {
-            NotificationCenter.default.addObserver(
-                forName: NSApplication.didBecomeActiveNotification,
-                object: nil,
-                queue: .main
-            ) { _ in
-                if let currentNote = currentNoteItem {
-                    viewModel.setNote(currentNote)
-                }
-            }
-            
-            customizeWindow()
+//            NotificationCenter.default.addObserver(
+//                forName: NSApplication.didBecomeActiveNotification,
+//                object: nil,
+//                queue: .main
+//            ) { _ in
+//                if let currentNote = currentNoteItem {
+//                    viewModel.setNote(currentNote)
+//                }
+//            }
+//            customizeWindow()
         }
         
         .onDisappear() {
-            NotificationCenter.default.removeObserver(self)
+            //NotificationCenter.default.removeObserver(self)
         }
     }
     
@@ -95,19 +101,14 @@ struct StickyView: View {
         }
     }
     
-    private var windowTools: some View {
+    private var editingTools: some View {
         HStack (spacing: 10) {
             Button {
                 viewModel.updatePinned()
                 dismiss()
             } label: {
-                Image(systemName: "pin.fill")
-                    .padding(5)
-                    .background(.white.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: 5))
+                Image(systemName: "h.circle.fill")
             }
-            
-            .buttonStyle(.plain)
             
             Divider()
                 .frame(height: 10)
@@ -115,27 +116,77 @@ struct StickyView: View {
             
             Button {
                 viewModel.saveNote(context)
+                withAnimation {
+                    viewModel.isEditing.toggle()
+                }
+            } label: {
+                Image(systemName: "checkmark.app.fill")
+            }
+            
+            Divider()
+                .frame(height: 10)
+                .overlay(.white)
+            
+            Button {
+
+            } label: {
+                Image(systemName: "link.circle.fill")
+            }
+            
+        }
+        
+        .buttonStyle(.plain)
+        .padding(5)
+        .background(.white.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 5))
+    }
+    
+    private var windowTools: some View {
+        HStack (spacing: 10) {
+            Button {
+                viewModel.updatePinned()
+                dismiss()
+            } label: {
+                Image(systemName: "pin.fill")
+            }
+            
+            
+            Divider()
+                .frame(height: 10)
+                .overlay(.white)
+            
+            Button (role: .destructive) {
+                
+            } label: {
+                Image(systemName: "trash.circle.fill")
+            }
+            
+            Divider()
+                .frame(height: 10)
+                .overlay(.white)
+
+            Button {
+                //viewModel.saveNote(context)
                 viewModel.isEditing.toggle()
             } label: {
-                Image(systemName: "checkmark.circle.fill")
-                    .padding(5)
-                    .background(.white.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: 5))
+                Image(systemName: viewModel.isEditing ? "pencil.circle.fill" : "magnifyingglass.circle.fill")
             }
         }
         
-        .buttonStyle(.borderless)
-        .padding([.horizontal])
+        .buttonStyle(.plain)
+        .padding(5)
+        .background(.white.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 5))
     }
     
     private var titleView: some View {
         VStack (alignment: .leading, spacing: 2) {
             TextField("", text: $viewModel.titleField)
                 .textFieldStyle(.plain)
-                .font(.title3.bold())
+                .font(.title2.bold())
                 .onSubmit {
                     viewModel.updateLastModified()
-                    viewModel.syncChanges(context)
+                    //viewModel.syncChanges(context)
                 }
             
             Text("Last modified \(viewModel.getDate()) at \(viewModel.getTime())")
@@ -145,30 +196,16 @@ struct StickyView: View {
         
         .padding([.horizontal])
     }
-    
+
     private var editingView: some View {
         TextEditor(text: $viewModel.contentField)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .font(.title3)
             .textEditorStyle(.plain)
             .scrollIndicators(.never)
     }
     
     private var markdownView: some View {
         MarkdownRenderer(input: $viewModel.contentField)
-    }
-    
-    private func customizeWindow() {
-        DispatchQueue.main.async {
-            if let window = NSApplication.shared.windows.first(where: { $0.title == noteItem.name }) {
-                window.isOpaque = true
-                window.titleVisibility = .hidden
-                window.standardWindowButton(.closeButton)?.isHidden = true
-                window.standardWindowButton(.miniaturizeButton)?.isHidden = true
-                window.standardWindowButton(.zoomButton)?.isHidden = true
-                window.isMovableByWindowBackground = true
-                window.level = .normal
-            }
-        }
     }
 }
 
