@@ -106,11 +106,14 @@ struct NoteView: View {
                             Label(viewModel.isPinned ? "Unpin" : "Pin", systemImage: "pin")
                         }
                         
-                        Picker("Color", selection: $viewModel.noteColor) {
+                        Picker(selection: $viewModel.noteColor) {
                             ForEach(Color.namedColors, id: \.name) { namedColor in
                                 Text(namedColor.name.capitalized)
                                     .tag(namedColor.name)
                             }
+                        } label: {
+                            Label("Color", systemImage: "circle.fill")
+                                .tint(Color(name: viewModel.noteColor))
                         }
                         .pickerStyle(.menu)
                         
